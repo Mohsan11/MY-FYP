@@ -1,0 +1,81 @@
+/* Default styles */
+.react-tabs {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.react-tabs__tab-list {
+  border-top: 1px solid #3498db;
+  margin: 0 0 10px;
+  padding: 0;
+}
+
+.react-tabs__tab {
+  display: inline-block;
+  border: 1px solid transparent;
+  border-bottom: none;
+  bottom: -1px;
+  position: relative;
+  list-style: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.react-tabs__tab--selected {
+  background: #3498db;
+  border-color: #aaa;
+  color: black;
+  border-radius: 5px 5px 0 0;
+}
+
+.react-tabs__tab--disabled {
+  color: #95a5a6;
+  cursor: default;
+}
+
+.react-tabs__tab:focus {
+  outline: none;
+}
+
+.react-tabs__tab:focus:after {
+  content: '';
+  position: absolute;
+  height: 5px;
+  left: -4px;
+  right: -4px;
+  bottom: -5px;
+  background: #3498db;
+}
+
+.react-tabs__tab-panel {
+  display: none;
+}
+
+.react-tabs__tab-panel--selected {
+  display: block;
+}
+
+/* .backBtn {
+  display: inline-block;
+  margin-right: 5px;
+  margin-left: auto;
+  text-decoration: none;
+  border: 1px solid #3498db;
+  color: silver;
+  background-color: #333;
+  padding: 5px;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+} */
+
+/* Responsive styles */
+@media only screen and (max-width: 600px) {
+  .react-tabs__tab {
+      padding: 4px 8px; /* Adjust padding for smaller screens */
+  }
+
+  .backBtn {
+      font-size: 14px; /* Adjust font size for smaller screens */
+  }
+}
+
+/* Add more media queries as needed for different screen sizes */
