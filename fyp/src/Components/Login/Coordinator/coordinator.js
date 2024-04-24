@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import "./teacher.css";
+import Navbar from "../../NavBar/nav.js";
+import "./coordinator.css";
 import logo from "../../Resources/logo.png";
-const Teacher = () => {
+const Coordinator = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -25,11 +26,12 @@ const Teacher = () => {
 
   return (
     <div>
+      <Navbar />
       <div className="container2">
         <img src={logo} alt="Logo"></img>
       </div>
       <div className="login-form-container">
-        <h2>Teacher Login</h2>
+        <h2>Coordinator Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email">Email:</label>
@@ -61,4 +63,4 @@ const Teacher = () => {
     </div>
   );
 };
-export default Teacher;
+export default Coordinator;
