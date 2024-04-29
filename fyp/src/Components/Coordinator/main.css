@@ -1,0 +1,47 @@
+.mainPanel{
+    display: flex;
+    width: 100%;
+    height: auto;
+}
+.panel-1{
+    background-color: rgb(17, 17, 172);
+    display: flex;
+    flex-direction: column;
+    width: 25%;
+    border: 1px solid black;
+}
+.panel-2{
+    display: flex;
+    flex-direction: column;
+    width: 75%;
+    border: 1px solid black;
+}
+.tags {
+    cursor: pointer;
+    margin: 1px;
+    color: #fff;
+    white-space: break-spaces; 
+  }
+  
+.expandCollapse{
+    display: flex;
+    margin-left: 20px;
+    cursor: pointer;
+    color: #fff;
+    margin-top: 10px;
+    background-color: rgb(8, 8, 114);
+}
+.tags:hover{
+    background-color: rgb(4, 4, 95);
+}
+.optionsList {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    margin-left: 40px;
+    font-size: small;
+    flex-wrap: wrap; 
+    gap: 5px;
+  }
+  

@@ -2,41 +2,77 @@ import React, { useState } from "react";
 import Navbar from "../../../NavBar/nav";
 import "./register.css";
 import logo from "../../../Resources/logo.png";
+import { useNavigate } from "react-router-dom";
+
 const Coordinator = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [Confirmpassword, setConfirmPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleNameChange = (e) => {
+    setName(e.target.value);
+  };
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
-  };
-  const handleNameChange = (e) => {
-    setName(e.target.value);
   };
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
+
   const handleConfirmPasswordChange = (e) => {
     setConfirmPassword(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // You can add your login logic here, such as sending the email and password to a server
-    console.log("Email:", email);
-    console.log("Password:", password);
+
+    if (password !== confirmPassword) {
+      console.log("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Registration successful");
+        navigate("/main", { state: { name } });
+        // Optionally, redirect to a success page or handle success in UI
+      } else {
+        console.error("Registration failed");
+        // Optionally, display an error message to the user
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle network errors or other exceptions
+    }
+
     // Reset the form after submission
+    setName("");
     setEmail("");
     setPassword("");
+    setConfirmPassword("");
   };
 
   return (
     <div>
       <Navbar />
       <div className="container2">
-        <img src={logo} alt="Logo"></img>
+        <img src={logo} alt="Logo" />
       </div>
       <div className="login-form-container">
         <h2>Register Coordinator</h2>
@@ -75,12 +111,12 @@ const Coordinator = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="Confirmpassword">Confirm Password:</label>
+            <label htmlFor="confirmPassword">Confirm Password:</label>
             <input
               type="password"
-              id="Confirmpassword"
-              name="Confirmpassword"
-              value={Confirmpassword}
+              id="confirmPassword"
+              name="confirmPassword"
+              value={confirmPassword}
               onChange={handleConfirmPasswordChange}
               required
             />
@@ -93,4 +129,5 @@ const Coordinator = () => {
     </div>
   );
 };
+
 export default Coordinator;

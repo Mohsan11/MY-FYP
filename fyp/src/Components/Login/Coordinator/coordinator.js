@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Navbar from "../../NavBar/nav.js";
 import "./coordinator.css";
 import logo from "../../Resources/logo.png";
+import { useHistory } from "react-router-dom";
+
 const Coordinator = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,11 +16,32 @@ const Coordinator = () => {
     setPassword(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // You can add your login logic here, such as sending the email and password to a server
-    console.log("Email:", email);
-    console.log("Password:", password);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      if (response.ok) {
+        // Optionally, redirect to another page on successful login
+        console.log("Login successful");
+      } else {
+        // Handle login failure, display error message, etc.
+        console.error("Login failed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
     // Reset the form after submission
     setEmail("");
     setPassword("");
@@ -63,4 +86,5 @@ const Coordinator = () => {
     </div>
   );
 };
+
 export default Coordinator;

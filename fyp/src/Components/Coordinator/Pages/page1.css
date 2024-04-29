@@ -1,0 +1,74 @@
+.Pg1-Main {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px; /* Adjust margins as needed */
+  }
+  
+  .Pg1_heading {
+    margin-bottom: 10px;
+  }
+  
+  .Pg1_note {
+    border: 1px solid black;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .small_heading {
+    color: red;
+    display: flex;
+    justify-content: start;
+  }
+  .small_heading1 {
+    margin: 2px 0px 0px 5px;
+    padding: 1px;
+  }
+  
+  .Pg1_Input {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .label {
+    width: 200px; 
+    margin-right: 10px; 
+    color: black;
+  }
+  
+  .inputfield,
+  .Page1input {
+    flex: 1; 
+    padding: 15px;
+    border: 1px solid #ccc;
+  }
+  
+  .imp{
+    color: red;
+  }
+  .endBtns{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    width: 100%;
+    height: auto;
+  }
+  .btns{
+    margin: 10px;
+   cursor: pointer;
+  }
+.cancelbtn{
+    background-color: #ccc;
+    margin-right: 5px;
+    padding: 8px;
+    width: 100px;
+    border-radius: 5px;
+}
+.savebtn{
+    background-color: blue;
+    color: #fff;
+    margin-right: 10px;
+    padding: 8px;
+    width: 100px;
+    border-radius: 5px;
+}
