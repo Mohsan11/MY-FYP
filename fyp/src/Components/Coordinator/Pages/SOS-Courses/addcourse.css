@@ -1,0 +1,11 @@
+.CourseContainer{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+.lp{
+   margin-left: 20px;
+}
+.rp{
+    margin-right: 50px;
+}

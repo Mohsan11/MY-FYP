@@ -1,14 +1,18 @@
-.mainPanel{
+.mainPanel {
     display: flex;
     width: 100%;
-    height: auto;
+    min-height: 100vh; 
+    height: auto; 
+    overflow-y: auto; 
 }
+
 .panel-1{
     background-color: rgb(17, 17, 172);
     display: flex;
     flex-direction: column;
     width: 25%;
     border: 1px solid black;
+
 }
 .panel-2{
     display: flex;
@@ -43,5 +47,68 @@
     font-size: small;
     flex-wrap: wrap; 
     gap: 5px;
+  }
+  
+  .profile-container {
+    display: flex;
+    align-items: stretch; /* Ensure children stretch to match the height of the container */
+    padding: 20px;
+    flex-wrap: wrap; /* Ensure responsiveness */
+  }
+  
+  .pf-img {
+    width: 100%;
+    max-width: 180px;
+    height: auto;
+  }
+  
+  .pf-titles {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around; /* Space out the titles to take up the full height */
+    margin-left: 30px;
+    flex: 1; /* Make this container take up the remaining space */
+  }
+  
+  .pf-title {
+    display: flex;
+    flex-direction: column;
+    margin: 10px 0;
+  }
+  
+  .pf-title span {
+    /* font-weight: bold; */
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+  
+  .line {
+    border-bottom: 1px solid black;
+    width: 30%;
+  }
+  
+  @media (max-width: 768px) {
+    .profile-container {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .pf-img {
+      margin-bottom: 20px;
+    }
+  
+    .pf-titles {
+      margin-left: 0;
+      align-items: center;
+    }
+  
+    .pf-title {
+      width: 100%;
+      align-items: center;
+    }
+  
+    .line {
+      width: 80%;
+    }
   }
   

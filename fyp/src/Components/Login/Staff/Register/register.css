@@ -6,6 +6,7 @@
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    height: 47vh;
   }
   
   .form-group {
@@ -25,7 +26,7 @@
     border-radius: 5px;
   }
   
-  .button2 {
+  /* .button2 {
     width: 50%;
     padding: 10px;
     background-color: #007bff;
@@ -34,7 +35,7 @@
     border-radius: 5px;
     cursor: pointer;
   }
-  
+   */
   .button2:hover {
     background-color: #0056b3;
   }

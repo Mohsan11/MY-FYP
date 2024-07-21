@@ -4,11 +4,13 @@
 }
 
 .react-tabs__tab-list {
-  border-top: 1px solid #3498db;
-  margin: 0 0 10px;
+  /* border-top: 1px solid #3498db; */
+  margin-top: 5px;
+  /* margin: 0 0 10px; */
   padding: 0;
+ display: flex;
+ justify-content: center ;
 }
-
 .react-tabs__tab {
   display: inline-block;
   border: 1px solid transparent;

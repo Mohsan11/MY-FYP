@@ -1,0 +1,72 @@
+.dashboard-container {
+    text-align: center;
+    margin-top: 20px; /* Adjust as needed */
+  }
+  
+  .dashboard-table {
+    width: 60%;
+    margin: 0 auto; /* Center the table horizontally */
+    border-collapse: collapse;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Adds a shadow effect */
+  }
+  
+  .dashboard-table th, .dashboard-table td {
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .dashboard-table th {
+    background-color: #f0f0f0; /* Optional: Header background color */
+    border-bottom: 1px solid #ddd; /* Optional: Header border bottom */
+  }
+  
+  .dashboard-table td {
+    border-bottom: 1px solid #ddd; /* Optional: Cell borders */
+  }
+  
+  .dashboard-table tbody tr:last-child td {
+    border-bottom: none; /* Optional: Remove border bottom on last row */
+  }
+  .logout-container {
+    position: absolute;
+    bottom: 10px;
+    left: 100px;
+    cursor: pointer;
+  }
+  
+  .logout-button {
+    color: #fff;
+    font-size: larger;
+  }
+  
+  .logout-button .bullet {
+    margin-right: 5px; /* Adjust as needed */
+  }
+  
+  /* Media query for tablets and smaller screens */
+  @media (max-width: 768px) {
+    .logout-container {
+      position: static;
+      text-align: center;
+      margin-top: 20px;
+      left: 100px;
+    }
+    
+    .logout-button {
+      font-size: medium;
+    }
+  }
+  
+  /* Media query for mobile devices */
+  @media (max-width: 576px) {
+    .logout-container {
+      position: static;
+      text-align: center;
+      margin-top: 10px;
+    }
+    
+    .logout-button {
+      font-size: small;
+    }
+  }
+  

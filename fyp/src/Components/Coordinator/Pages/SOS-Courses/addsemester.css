@@ -1,0 +1,102 @@
+.SemesterContainer {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+  }
+  
+  .lp {
+    margin-left: 20px;
+  }
+  
+  .rp {
+    margin-right: 50px;
+  }
+  
+  .pg-container {
+    margin: 0;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .heading {
+    border-bottom: 1px solid #000;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+  }
+  
+  .subheading {
+    border-bottom: 1px solid #000;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .label {
+    flex: 0 0 100px;
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  
+  .input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #ddd;
+    width: 80%;
+    justify-content: center;
+  }
+  
+  .input:focus {
+    border-color: rgb(0, 77, 177);
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  
+  .button {
+    padding: 10px 20px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .save-button {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .cancel-button {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .message {
+    display: block;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+  }
+  
+  .success {
+    color: green;
+    border: 1px solid green;
+  }
+  
+  .error {
+    color: red;
+    border: 1px solid red;
+  }
+  

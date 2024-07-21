@@ -1,54 +1,203 @@
 import React, { useState } from "react";
 import "./main.css";
-import Page1 from "./Pages/page1.js";
-import Page2 from "./Pages/page2.js";
-import Page3 from "./Pages/page3.js";
-import Page4 from "./Pages/page4.js";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Logo from "../Resources/Must Logo.jpg";
+import Dashboard from './Pages/Dashboard/dashboard.js';
+import AddStaff from './Pages/manage staff/Staff/addStaff.js';
+import DeleteCoordinator from './Pages/manage staff/Staff/deleteCoordinator.js';
+import UpdateCoordinator from './Pages/manage staff/Staff/updateCoordinator.js';
+import SearchCoordinator from './Pages/manage staff/Staff/searchCordinator.js';
+import AddTeacher from './Pages/manage staff/Teacher/addTeacher.js';
+import DeleteTeacher from './Pages/manage staff/Teacher/deleteTeacher.js';
+import UpdateTeacher from './Pages/manage staff/Teacher/updateTeacher.js';
+import SearchTeacher from './Pages/manage staff/Teacher/searchTeacher.js';
+import AddStudent from './Pages/manage staff/Student/addstudent.js';
+import DeleteStudent from './Pages/manage staff/Student/deletestudent.js';
+import UpdateStudent from './Pages/manage staff/Student/updatestudent.js';
+import SearchStudent from './Pages/manage staff/Student/searchStudent.js';
+import Page1 from "./Pages/SOS-Courses/page1.js";
+import AddProgram from "./Pages/SOS-Courses/AddProgram.js";
+import AddCourse from "./Pages/SOS-Courses/AddCourse.js";
+import AddSemester from "./Pages/SOS-Courses/AddSemester.js";
+import AddPLO from "./Pages/SOS-Courses/AddPLO.js";
+import AddCLO from "./Pages/SOS-Courses/ADDCLO.js";
+import Mapping from "./Pages/SOS-Courses/Mapping.js";
+import ViewSOS from "./Pages/SOS-Courses/ViewSOS.js";
+import profile from '../Resources/profileavatar.png'
+import AssignTeacher from "./Pages/SOS-Courses/Assign_Teacher.js";
+
 const Main = () => {
-  const [currentPage, setCurrentPage] = useState("first");
+  const navigate = useNavigate(); // Hook for navigation
+  const [currentPage, setCurrentPage] = useState("dashboard"); // Default page
   const location = useLocation();
-  const [showOptions, setShowOptions] = useState(true); // State to manage visibility
+  const [showDashboard, setShowDashboard] = useState(true); // State to manage Dashboard visibility
+  const [showManageStaff, setShowManageStaff] = useState(false); // State to manage Manage Staff visibility
+  const [showSOSCourses, setShowSOSCourses] = useState(false); // State to manage SOS-Courses visibility
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
-  const toggleOptions = () => {
-    setShowOptions(!showOptions); // Toggle showOptions state
+
+  const toggleDashboard = () => {
+    setShowDashboard(!showDashboard); // Toggle Dashboard state
+  };
+
+  const toggleManageStaff = () => {
+    setShowManageStaff(!showManageStaff); // Toggle Manage Staff state
+  };
+
+  const toggleSOSCourses = () => {
+    setShowSOSCourses(!showSOSCourses); // Toggle SOS-Courses state
+  };
+
+  const { name, id, role ,email} = location.state || {};
+
+  const handleLogout = () => {
+    // Perform logout actions if needed
+    navigate('/'); // Navigate to '/' on logout
   };
 
   return (
     <div>
-      <p>Welcome, {location.state && location.state.name}!</p>
+      {/* <p>Welcome, {name} (ID: {id}, Role: {role})!</p> */}
       <div className="mainPanel">
         <div className="panel-1">
           <img src={Logo} alt="must_logo"></img>
-          <div onClick={toggleOptions} className="expandCollapse">
-            {showOptions ? "▼" : "▲"} SOS-Courses
+          <div onClick={toggleDashboard} className="expandCollapse">
+            {showDashboard ? "▼" : "▲"} Dashboard
           </div>
-          {showOptions && (
+          {showDashboard && (
             <div className="optionsList">
-              <p className="tags" onClick={() => handlePageChange("first")}>
-                Add Course
-              </p>
-              <p className="tags" onClick={() => handlePageChange("second")}>
-                Add Course Scheme
-              </p>
-              <p className="tags" onClick={() => handlePageChange("third")}>
-                Add Course Scheme Details
-              </p>
-              <p className="tags" onClick={() => handlePageChange("fourth")}>
-                Copy Course Scheme By Courses
+              <p className="tags" onClick={() => handlePageChange("dashboard")}>
+                Dashboard
               </p>
             </div>
           )}
+          <div onClick={toggleManageStaff} className="expandCollapse">
+            {showManageStaff ? "▼" : "▲"} Manage Staff
+          </div>
+          {showManageStaff && (
+            <div className="optionsList">
+              <p className="tags" onClick={() => handlePageChange("addstaff")}>
+                Add Staff
+              </p>
+              <p className="tags" onClick={() => handlePageChange("deleteCoordinator")}>
+                Delete Coordinator
+              </p>
+              <p className="tags" onClick={() => handlePageChange("updateCoordinator")}>
+                Update Coordinator
+              </p>
+              <p className="tags" onClick={() => handlePageChange("searchCoordinator")}>
+                Search Coordinator
+              </p>
+              <p className="tags" onClick={() => handlePageChange("addTeacher")}>
+                Add Teacher
+              </p>
+              <p className="tags" onClick={() => handlePageChange("deleteTeacher")}>
+                Delete Teacher
+              </p>
+              <p className="tags" onClick={() => handlePageChange("updateTeacher")}>
+                Update Teacher
+              </p>
+              <p className="tags" onClick={() => handlePageChange("searchTeacher")}>
+                Search Teacher
+              </p>
+              <p className="tags" onClick={() => handlePageChange("addStudent")}>
+                Add Student
+              </p>
+              <p className="tags" onClick={() => handlePageChange("deleteStudent")}>
+                Delete Student
+              </p>
+              <p className="tags" onClick={() => handlePageChange("updateStudent")}>
+                Update Student
+              </p>
+              <p className="tags" onClick={() => handlePageChange("searchStudent")}>
+                Search Student
+              </p>
+            </div>
+          )}
+          <div onClick={toggleSOSCourses} className="expandCollapse">
+            {showSOSCourses ? "▼" : "▲"} SOS-Courses
+          </div>
+          {showSOSCourses && (
+            <div className="optionsList">
+              <p className="tags" onClick={() => handlePageChange("first")}>
+                Add Course-----
+              </p>
+              <p className="tags" onClick={() => handlePageChange("addprogram")}>
+                Add Program
+              </p>
+              <p className="tags" onClick={() => handlePageChange("addcourse")}>
+                Add Course
+              </p>
+              <p className="tags" onClick={() => handlePageChange("addsemester")}>
+                Add Semester
+              </p>
+              <p className="tags" onClick={() => handlePageChange("assignTeacher")}>
+                Assign Teacher
+              </p>
+              <p className="tags" onClick={() => handlePageChange("addplo")}>
+                Add PLO
+              </p>
+              <p className="tags" onClick={() => handlePageChange("addclo")}>
+                Add CLO
+              </p>
+              <p className="tags" onClick={() => handlePageChange("mapping")}>
+                Mapping
+              </p>
+              <p className="tags" onClick={() => handlePageChange("view_SOS")}>
+                View-SOS
+              </p>
+            </div>
+          )}
+          <div className="logout-container">
+            <p className="logout-button" onClick={handleLogout}> <span className="bullet">&#8226;</span> Logout</p>
+          </div>
         </div>
         <div className="panel-2">
+        <div className="profile-container">
+  <div className="pf-img">
+    <img className="pf-img" src={profile} alt="profile-logo" />
+  </div>
+  <div className="pf-titles">
+    <div className="pf-title">
+      <span> {name}</span>
+      <div className="line"></div>
+    </div>
+    <div className="pf-title">
+      <span> {email}</span>
+      <div className="line"></div>
+    </div>
+    <div className="pf-title">
+      <span> {role}</span>
+      <div className="line"></div>
+    </div>
+  </div>
+</div>
+
+        {/* <p>Welcome, {name} (ID: {id}, Role: {role})!</p> */}
+          {currentPage === "dashboard" && <Dashboard />}
           {currentPage === "first" && <Page1 />}
-          {currentPage === "second" && <Page2 />}
-          {currentPage === "third" && <Page3 />}
-          {currentPage === "fourth" && <Page4 />}
+          {currentPage === "addprogram" && <AddProgram />}
+          {currentPage === "addsemester" && <AddSemester />}
+          {currentPage === "addcourse" && <AddCourse />}
+          {currentPage === "assignTeacher" && <AssignTeacher />}
+          {currentPage === "addplo" && <AddPLO />}
+          {currentPage === "addclo" && <AddCLO />}
+          {currentPage === "mapping" && <Mapping />}
+          {currentPage === "view_SOS" && < ViewSOS />}
+          {currentPage === "addstaff" && <AddStaff />}
+          {currentPage === "deleteCoordinator" && <DeleteCoordinator />}
+          {currentPage === "updateCoordinator" && <UpdateCoordinator />}
+          {currentPage === "searchCoordinator" && <SearchCoordinator />}
+          {currentPage === "addTeacher" && <AddTeacher />}
+          {currentPage === "deleteTeacher" && <DeleteTeacher />}
+          {currentPage === "updateTeacher" && <UpdateTeacher />}
+          {currentPage === "searchTeacher" && <SearchTeacher />}
+          {currentPage === "addStudent" && <AddStudent />}
+          {currentPage === "deleteStudent" && <DeleteStudent />}
+          {currentPage === "updateStudent" && <UpdateStudent />}
+          {currentPage === "searchStudent" && <SearchStudent />}
         </div>
       </div>
     </div>
