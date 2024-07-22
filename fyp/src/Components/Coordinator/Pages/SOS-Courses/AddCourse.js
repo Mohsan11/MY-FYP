@@ -12,7 +12,7 @@ const AddCourse = () => {
   const [sessions, setSessions] = useState([]);
   const [selectedSession, setSelectedSession] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
-  const [responseType, setResponseType] = useState(''); // 'success' or 'error'
+  const [responseType, setResponseType] = useState('');
 
   useEffect(() => {
     axios.get('http://localhost:4000/api/programs/all').then(response => {
@@ -42,11 +42,9 @@ const AddCourse = () => {
         program_id: selectedProgram
       });
 
-      // In the original code, a new semester is created, but now we are selecting from existing ones
+     
       setResponseMessage("Course added successfully!");
       setResponseType('success');
-     
-      // Clear input fields on successful save
       setCourseName('');
       setCourseCode('');
       setSelectedProgram('');
@@ -83,11 +81,11 @@ const AddCourse = () => {
     <div className='CourseContainer'>
       <h2 className="heading">Add Course</h2>
       <div className='lp'>
-        <label>Name:</label>
+        <label>Course Name:</label>
         <input className="input" type="text" value={courseName} onChange={(e) => setCourseName(e.target.value)} />
       </div>
       <div className='lp'>
-        <label>Code:</label>
+        <label>Course Code:</label>
         <input className="input" type="text" value={courseCode} onChange={(e) => setCourseCode(e.target.value)} />
       </div>
       <div className='lp'>

@@ -58,7 +58,7 @@ body {
 
 input,
 select {
-  margin: 5px; /* Adjust the spacing between input/select elements */
+  margin: 5px;
   padding: 8px;
   border-radius: 5px;
   border: 1px solid #ccc;

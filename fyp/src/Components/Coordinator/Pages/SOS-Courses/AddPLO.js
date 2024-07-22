@@ -72,12 +72,12 @@ const AddPLO = () => {
     <div className='PLOContainer'>
       <h2 className="heading">Add PLO</h2>
       <div className='lp'>
-        <label>Description:</label>
-        <input className="input" type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
-      </div>
-      <div className='lp'>
         <label>PLO Name:</label>
         <input className="input" type="text" value={ploName} onChange={(e) => setPloName(e.target.value)} />
+      </div>
+      <div className='lp'>
+        <label>Description:</label>
+        <input className="input" type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
       </div>
       <div className='lp'>
         <label>Select Program:</label>

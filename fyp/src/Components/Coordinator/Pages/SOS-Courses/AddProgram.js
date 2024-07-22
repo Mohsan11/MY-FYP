@@ -1,90 +1,128 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import './addprogram.css';
+import './addsemester.css';
 
 const AddProgram = () => {
   const [name, setName] = useState("");
-  const [code, setCode] = useState("");
   const [startYear, setStartYear] = useState("");
   const [endYear, setEndYear] = useState("");
+  const [semesterName, setSemesterName] = useState('');
+  const [semesterNumber, setSemesterNumber] = useState('');
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
-  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleStartYearChange = (e) => {
+    const selectedYear = e.target.value;
+    const currentYear = new Date().getFullYear();
+    if (selectedYear >= currentYear - 4) {
+      setStartYear(selectedYear);
+      setEndYear(parseInt(selectedYear) + 4);
+    }
+  };
+
+  const handleSave = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await axios.post("http://localhost:4000/api/programs_sessions", {
-        program: { name, code },
-        session: { start_year: startYear, end_year: endYear }
-      });
-
-      setMessage("Program and session saved successfully!");
-      setMessageType("success");
-
-      setName("");
-      setCode("");
-      setStartYear("");
-      setEndYear("");
-    } catch (error) {
-      setMessage("Error saving program and session");
+    if (!name || !startYear || !endYear || !semesterName || !semesterNumber) {
+      setMessage("All fields must be filled.");
       setMessageType("error");
       setTimeout(() => {
         setMessage("");
         setMessageType("");
+      }, 5000);
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:4000/api/programs_sessions_semester/", {
+        program: { name },
+        session: { start_year: startYear, end_year: endYear },
+        semester: { name: semesterName, number: semesterNumber }
+      });
+
+      setMessage("Program, session, and semester added successfully!");
+      setMessageType("success");
+
+      setName("");
+      setStartYear("");
+      setEndYear("");
+      setSemesterName('');
+      setSemesterNumber('');
+      
+      setTimeout(() => {
+        setMessage("");
+        setMessageType('');
+      }, 5000);
+    } catch (error) {
+      console.error("Error saving data:", error);
+      setMessage("Failed to add Program, Session, or Semester. Please try again.");
+      setMessageType("error");
+      setTimeout(() => {
+        setMessage("");
+        setMessageType('');
       }, 5000);
     }
   };
 
   const handleCancel = () => {
     setName("");
-    setCode("");
     setStartYear("");
     setEndYear("");
+    setSemesterName('');
+    setSemesterNumber('');
+    setMessage('');
+    setMessageType('');
   };
 
   return (
     <div className="pg-container">
       <h3 className="heading">Add Program</h3>
-      <form className="form" onSubmit={handleSubmit}>
+      <form className="form" onSubmit={handleSave}>
         <div className="form-group">
-          <div className="label">Name</div>
-          <input width={100}
+          <div className="label">Program Name</div>
+          <select
             className="input"
-            type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <div className="label">Code</div>
-          <input
-            className="input"
-            type="text"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-          />
+          >
+            <option value="">Select a program</option>
+            <option value="Computer Science">Computer Science</option>
+            <option value="Information Security">Information Security</option>
+            <option value="Software Engineering">Software Engineering</option>
+          </select>
         </div>
         <h3 className="subheading">Session</h3>
         <div className="form-group">
           <div className="label">Start Year</div>
           <input
             className="input"
-            type="text"
+            type="number"
             value={startYear}
-            onChange={(e) => setStartYear(e.target.value)}
+            onChange={handleStartYearChange}
+            min={new Date().getFullYear() - 4}
+            max={new Date().getFullYear() + 1 }
           />
         </div>
         <div className="form-group">
           <div className="label">End Year</div>
           <input
             className="input"
-            type="text"
+            type="number"
             value={endYear}
-            onChange={(e) => setEndYear(e.target.value)}
+            readOnly
           />
+        </div>
+        <h3 className="heading">Add Semester</h3>
+        <div className='SemesterContainer'>
+          <div className='lp'>
+            <label>Name:</label>
+            <input className="input" type="text" value={semesterName} onChange={(e) => setSemesterName(e.target.value)} />
+          </div>
+          <div className='lp'>
+            <label>Number:</label>
+            <input className="input" type="number" value={semesterNumber} min={1} max={10} onChange={(e) => setSemesterNumber(e.target.value)} />
+          </div>
         </div>
         <div className="button-group">
           <button className="button save-button" type="submit">Save</button>

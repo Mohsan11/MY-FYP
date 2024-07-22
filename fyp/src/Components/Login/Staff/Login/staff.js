@@ -72,20 +72,17 @@ const Staff = () => {
           setError("Unsupported role. Please contact support.");
         }
       } else {
-        // Login failed
-        setError(data.message || "Login failed. Please try again."); // Assuming your backend sends an error message
+        setError(data.message || "Login failed. Invalid credentials!");
         console.error("Login failed:", data.message || "Unknown error");
       }
     } catch (error) {
-      // Network or server error
-      setError("Login failed. Please try again."); // Generic error message
+      setError("Login failed. Invalid credentials!"); 
       console.error("Error:", error);
       setTimeout(() => {
         setError("")
       }, 5000);
     }
 
-    // Reset the form after submission
     setEmail("");
     setPassword("");
   };
@@ -100,7 +97,7 @@ const Staff = () => {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email">Email</label>
-            <input
+            <input style={{width: '80%'}}
               type="email"
               id="email"
               name="email"

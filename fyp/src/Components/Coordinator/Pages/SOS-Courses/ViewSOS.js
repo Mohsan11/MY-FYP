@@ -10,7 +10,6 @@ const ViewSOS = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch data from APIs
         const [
           programResponse,
           sessionResponse,
@@ -43,37 +42,28 @@ const ViewSOS = () => {
         const teacherAssignments = teacherAssignmentResponse.data;
         const users = userResponse.data;
 
-        // Format data to include only relevant PLOs for each course
         const formattedData = courses.map(course => {
-          // Find related CLOs
           const courseCLOs = clos.filter(clo => clo.course_id === course.id);
-          const courseCLOsNames = courseCLOs.map(clo => clo.clo_name).join(', ');
 
-          // Find related PLOs for the CLOs
-          const coursePLOIds = courseCLOs.flatMap(clo => {
+          const cloPloMappings = courseCLOs.flatMap(clo => {
             return mappings
               .filter(mapping => mapping.clo_id === clo.id)
-              .map(mapping => mapping.plo_id);
+              .map(mapping => {
+                const plo = plos.find(p => p.id === mapping.plo_id);
+                return { clo_name: clo.clo_name, plo_name: plo ? plo.plo_name : 'Unknown PLO' };
+              });
           });
 
-          const relatedPLOs = plos.filter(plo => coursePLOIds.includes(plo.id));
-          const relatedPLOsNames = relatedPLOs.map(plo => plo.plo_name).join(', ');
-
-          // Get program information
           const program = programs.find(program => program.id === course.program_id)?.name || 'Unknown Program';
 
-          // Get semester information
           const semesterAssignment = teacherAssignments.find(assignment => assignment.course_id === course.id);
-          const semester = semesters.find(semester => semester.id === (semesterAssignment ? semesterAssignment.semester_id : null));
-          const semesterName = semester ? `${semester.term} ${semester.number}` : 'Unknown Semester';
+          const semester = semesterAssignment ? semesters.find(semester => semester.id === semesterAssignment.semester_id) : null;
+          const semesterName = semester ? `${semester.name} ${semester.number}` : 'Unknown Semester';
 
-          // Get session information
-          const session = sessions.find(session => session.id === (semester ? semester.session_id : null));
+          const session = semester ? sessions.find(session => session.id === semester.session_id) : null;
           const sessionName = session ? `${session.start_year} - ${session.end_year}` : 'Unknown Session';
 
-          // Get teacher information
-          const teacherAssignment = teacherAssignments.find(assignment => assignment.course_id === course.id);
-          const teacher = users.find(user => user.id === (teacherAssignment ? teacherAssignment.teacher_id : null));
+          const teacher = semesterAssignment ? users.find(user => user.id === semesterAssignment.teacher_id) : null;
           const teacherName = teacher ? teacher.username : 'Unknown Teacher';
 
           return {
@@ -81,8 +71,7 @@ const ViewSOS = () => {
             session: sessionName,
             semester: semesterName,
             course: course.name,
-            clos: courseCLOsNames,
-            plos: relatedPLOsNames,
+            cloPloMappings,
             teacher: teacherName
           };
         });
@@ -104,11 +93,6 @@ const ViewSOS = () => {
       <h2>View Courses</h2>
       {loading && <p>Loading...</p>}
       {error && <p className="error-message">{error}</p>}
-      <div className="button-group">
-        <button className="btn primary">Button 1</button>
-        <button className="btn secondary">Button 2</button>
-        <button className="btn success">Button 3</button>
-      </div>
       <table className="data-table">
         <thead>
           <tr>
@@ -116,8 +100,7 @@ const ViewSOS = () => {
             <th>Session</th>
             <th>Semester</th>
             <th>Course</th>
-            <th>CLOs</th>
-            <th>PLOs</th>
+            <th>CLO - PLO Mappings</th>
             <th>Teacher</th>
           </tr>
         </thead>
@@ -128,8 +111,11 @@ const ViewSOS = () => {
               <td>{item.session}</td>
               <td>{item.semester}</td>
               <td>{item.course}</td>
-              <td>{item.clos}</td>
-              <td>{item.plos}</td>
+              <td>
+                {item.cloPloMappings.map((mapping, i) => (
+                  <div key={i}>{mapping.clo_name} - {mapping.plo_name}</div>
+                ))}
+              </td>
               <td>{item.teacher}</td>
             </tr>
           ))}

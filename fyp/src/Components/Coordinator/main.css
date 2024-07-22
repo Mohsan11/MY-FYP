@@ -51,9 +51,9 @@
   
   .profile-container {
     display: flex;
-    align-items: stretch; /* Ensure children stretch to match the height of the container */
+    align-items: stretch; 
     padding: 20px;
-    flex-wrap: wrap; /* Ensure responsiveness */
+    flex-wrap: wrap; 
   }
   
   .pf-img {
@@ -109,6 +109,54 @@
   
     .line {
       width: 80%;
+    }
+  }
+  
+
+  /* .logout-container {
+    position: absolute;
+    bottom: 10px;
+    left: 100px;
+    cursor: pointer;
+  } */
+  
+  .logout-button {
+    margin-top: 50px;
+    color: #000000;
+    font-size: larger;
+    margin-right: 20px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .logout-button .bullet {
+    margin-right: 5px; /* Adjust as needed */
+  }
+  
+  /* Media query for tablets and smaller screens */
+  @media (max-width: 768px) {
+    /* .logout-container {
+      position: static;
+      text-align: center;
+      margin-top: 20px;
+      left: 100px;
+    }
+     */
+    .logout-button {
+      font-size: medium;
+    }
+  }
+  
+  /* Media query for mobile devices */
+  @media (max-width: 576px) {
+    .logout-container {
+      position: static;
+      text-align: center;
+      margin-top: 10px;
+    }
+    
+    .logout-button {
+      font-size: small;
     }
   }
   

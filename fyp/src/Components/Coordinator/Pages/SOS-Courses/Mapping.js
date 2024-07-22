@@ -116,7 +116,9 @@ const Mapping = () => {
         <select value={cloId} onChange={(e) => setCloId(e.target.value)}>
           <option value="" disabled>Select CLO</option>
           {clos.map(clo => (
-            <option key={clo.id} value={clo.id}>{clo.clo_name} (Course: {clo.course_name}, Session: {clo.session_name})</option>
+            <option key={clo.id} value={clo.id}>
+              {clo.clo_name} (Course: {clo.course_name}, Session: {clo.session_name}) - {clo.description}
+            </option>
           ))}
         </select>
       </div>
@@ -125,7 +127,7 @@ const Mapping = () => {
         <select value={ploId} onChange={(e) => setPloId(e.target.value)}>
           <option value="" disabled>Select PLO</option>
           {plos.map(plo => (
-            <option key={plo.id} value={plo.id}>{plo.plo_name} (Program: {plo.program_name})</option>
+            <option key={plo.id} value={plo.id}>{plo.plo_name} (Program: {plo.program_name})(description: {plo.description})</option>
           ))}
         </select>
       </div>
@@ -141,6 +143,7 @@ const Mapping = () => {
         <thead>
           <tr>
             <th>CLO</th>
+            <th>Description</th>
             <th>Course</th>
             <th>Session</th>
             <th>PLO</th>
@@ -155,6 +158,7 @@ const Mapping = () => {
             return (
               <tr key={`${mapping.clo_id}-${mapping.plo_id}`}>
                 <td>{clo ? clo.clo_name : 'Unknown CLO'}</td>
+                <td>{clo ? clo.description : 'No description'}</td>
                 <td>{clo ? clo.course_name : 'Unknown Course'}</td>
                 <td>{clo ? clo.session_name : 'Unknown Session'}</td>
                 <td>{plo ? plo.plo_name : 'Unknown PLO'}</td>

@@ -12,10 +12,8 @@ import DeleteTeacher from './Pages/manage staff/Teacher/deleteTeacher.js';
 import UpdateTeacher from './Pages/manage staff/Teacher/updateTeacher.js';
 import SearchTeacher from './Pages/manage staff/Teacher/searchTeacher.js';
 import AddStudent from './Pages/manage staff/Student/addstudent.js';
-import DeleteStudent from './Pages/manage staff/Student/deletestudent.js';
 import UpdateStudent from './Pages/manage staff/Student/updatestudent.js';
-import SearchStudent from './Pages/manage staff/Student/searchStudent.js';
-import Page1 from "./Pages/SOS-Courses/page1.js";
+import StudentTable from './Pages/manage staff/Student/studentTable.js';
 import AddProgram from "./Pages/SOS-Courses/AddProgram.js";
 import AddCourse from "./Pages/SOS-Courses/AddCourse.js";
 import AddSemester from "./Pages/SOS-Courses/AddSemester.js";
@@ -27,27 +25,27 @@ import profile from '../Resources/profileavatar.png'
 import AssignTeacher from "./Pages/SOS-Courses/Assign_Teacher.js";
 
 const Main = () => {
-  const navigate = useNavigate(); // Hook for navigation
-  const [currentPage, setCurrentPage] = useState("dashboard"); // Default page
+  const navigate = useNavigate(); 
+  const [currentPage, setCurrentPage] = useState("dashboard");
   const location = useLocation();
-  const [showDashboard, setShowDashboard] = useState(true); // State to manage Dashboard visibility
-  const [showManageStaff, setShowManageStaff] = useState(false); // State to manage Manage Staff visibility
-  const [showSOSCourses, setShowSOSCourses] = useState(false); // State to manage SOS-Courses visibility
+  const [showDashboard, setShowDashboard] = useState(true); 
+  const [showManageStaff, setShowManageStaff] = useState(false);
+  const [showSOSCourses, setShowSOSCourses] = useState(false); 
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
   const toggleDashboard = () => {
-    setShowDashboard(!showDashboard); // Toggle Dashboard state
+    setShowDashboard(!showDashboard);
   };
 
   const toggleManageStaff = () => {
-    setShowManageStaff(!showManageStaff); // Toggle Manage Staff state
+    setShowManageStaff(!showManageStaff);
   };
 
   const toggleSOSCourses = () => {
-    setShowSOSCourses(!showSOSCourses); // Toggle SOS-Courses state
+    setShowSOSCourses(!showSOSCourses); 
   };
 
   const { name, id, role ,email} = location.state || {};
@@ -79,40 +77,37 @@ const Main = () => {
           {showManageStaff && (
             <div className="optionsList">
               <p className="tags" onClick={() => handlePageChange("addstaff")}>
-                Add Staff
+                Add Teacher/Coordinator
               </p>
-              <p className="tags" onClick={() => handlePageChange("deleteCoordinator")}>
+              {/* <p className="tags" onClick={() => handlePageChange("deleteCoordinator")}>
                 Delete Coordinator
-              </p>
-              <p className="tags" onClick={() => handlePageChange("updateCoordinator")}>
+              </p> */}
+              {/* <p className="tags" onClick={() => handlePageChange("updateCoordinator")}>
                 Update Coordinator
-              </p>
+              </p> */}
               <p className="tags" onClick={() => handlePageChange("searchCoordinator")}>
-                Search Coordinator
+                Manage Coordinator
               </p>
-              <p className="tags" onClick={() => handlePageChange("addTeacher")}>
+              {/* <p className="tags" onClick={() => handlePageChange("addTeacher")}>
                 Add Teacher
-              </p>
-              <p className="tags" onClick={() => handlePageChange("deleteTeacher")}>
+              </p> */}
+              {/* <p className="tags" onClick={() => handlePageChange("deleteTeacher")}>
                 Delete Teacher
-              </p>
-              <p className="tags" onClick={() => handlePageChange("updateTeacher")}>
+              </p> */}
+              {/* <p className="tags" onClick={() => handlePageChange("updateTeacher")}>
                 Update Teacher
-              </p>
+              </p> */}
               <p className="tags" onClick={() => handlePageChange("searchTeacher")}>
-                Search Teacher
+                Manage Teacher
               </p>
               <p className="tags" onClick={() => handlePageChange("addStudent")}>
                 Add Student
               </p>
-              <p className="tags" onClick={() => handlePageChange("deleteStudent")}>
-                Delete Student
-              </p>
-              <p className="tags" onClick={() => handlePageChange("updateStudent")}>
+              {/* <p className="tags" onClick={() => handlePageChange("updateStudent")}>
                 Update Student
-              </p>
-              <p className="tags" onClick={() => handlePageChange("searchStudent")}>
-                Search Student
+              </p> */}
+              <p className="tags" onClick={() => handlePageChange("managestudents")}>
+                Manage Students
               </p>
             </div>
           )}
@@ -121,17 +116,14 @@ const Main = () => {
           </div>
           {showSOSCourses && (
             <div className="optionsList">
-              <p className="tags" onClick={() => handlePageChange("first")}>
-                Add Course-----
-              </p>
               <p className="tags" onClick={() => handlePageChange("addprogram")}>
                 Add Program
               </p>
-              <p className="tags" onClick={() => handlePageChange("addcourse")}>
-                Add Course
-              </p>
               <p className="tags" onClick={() => handlePageChange("addsemester")}>
                 Add Semester
+              </p>
+              <p className="tags" onClick={() => handlePageChange("addcourse")}>
+                Add Course
               </p>
               <p className="tags" onClick={() => handlePageChange("assignTeacher")}>
                 Assign Teacher
@@ -150,12 +142,10 @@ const Main = () => {
               </p>
             </div>
           )}
-          <div className="logout-container">
-            <p className="logout-button" onClick={handleLogout}> <span className="bullet">&#8226;</span> Logout</p>
-          </div>
+          
         </div>
         <div className="panel-2">
-        <div className="profile-container">
+        <div className="profile-container ">
   <div className="pf-img">
     <img className="pf-img" src={profile} alt="profile-logo" />
   </div>
@@ -173,11 +163,11 @@ const Main = () => {
       <div className="line"></div>
     </div>
   </div>
+  <div className="logout-container">
+            <p className="logout-button" onClick={handleLogout}> <span className="bullet">&#8226;</span> Logout</p>
+          </div>
 </div>
-
-        {/* <p>Welcome, {name} (ID: {id}, Role: {role})!</p> */}
           {currentPage === "dashboard" && <Dashboard />}
-          {currentPage === "first" && <Page1 />}
           {currentPage === "addprogram" && <AddProgram />}
           {currentPage === "addsemester" && <AddSemester />}
           {currentPage === "addcourse" && <AddCourse />}
@@ -195,9 +185,8 @@ const Main = () => {
           {currentPage === "updateTeacher" && <UpdateTeacher />}
           {currentPage === "searchTeacher" && <SearchTeacher />}
           {currentPage === "addStudent" && <AddStudent />}
-          {currentPage === "deleteStudent" && <DeleteStudent />}
           {currentPage === "updateStudent" && <UpdateStudent />}
-          {currentPage === "searchStudent" && <SearchStudent />}
+          {currentPage === "managestudents" && <StudentTable />}
         </div>
       </div>
     </div>
