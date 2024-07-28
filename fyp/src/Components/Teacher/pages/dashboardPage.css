@@ -1,0 +1,27 @@
+.dashboardPage {
+    padding: 20px;
+  }
+  
+  .dashboardPage h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .dashboardPage ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .dashboardPage li {
+    margin-bottom: 15px;
+  }
+  
+  .dashboardPage h2 {
+    margin: 0;
+    font-size: 20px;
+  }
+  
+  .dashboardPage p {
+    margin: 5px 0;
+  }
+  

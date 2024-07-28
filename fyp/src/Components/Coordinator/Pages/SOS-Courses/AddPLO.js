@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import DataTable from 'react-data-table-component';
 import './addplo.css';
 
 const AddPLO = () => {
@@ -9,53 +10,116 @@ const AddPLO = () => {
   const [selectedProgram, setSelectedProgram] = useState('');
   const [sessions, setSessions] = useState([]);
   const [selectedSession, setSelectedSession] = useState('');
+  const [plos, setPlos] = useState([]);
+  const [editMode, setEditMode] = useState(false);
+  const [editPloId, setEditPloId] = useState(null);
   const [responseMessage, setResponseMessage] = useState('');
   const [responseType, setResponseType] = useState(''); // 'success' or 'error'
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/programs/all').then(response => {
-      setPrograms(response.data);
-    }).catch(error => {
-      console.error("Error fetching programs:", error);
-    });
-
-    axios.get('http://localhost:4000/api/session/all').then(response => {
-      setSessions(response.data);
-    }).catch(error => {
-      console.error("Error fetching sessions:", error);
-    });
+    const fetchProgramsAndSessions = async () => {
+      try {
+        const [programsResponse, sessionsResponse] = await Promise.all([
+          axios.get('http://localhost:4000/api/programs/all'),
+          axios.get('http://localhost:4000/api/session/all')
+        ]);
+        setPrograms(programsResponse.data);
+        setSessions(sessionsResponse.data);
+      } catch (error) {
+        console.error("Error fetching programs or sessions:", error);
+      }
+    };
+    fetchProgramsAndSessions();
+    fetchPlos();
   }, []);
 
-  const handleSave = async () => {
+  const fetchPlos = async () => {
     try {
-      const ploResponse = await axios.post('http://localhost:4000/api/plo', {
+      const response = await axios.get('http://localhost:4000/api/plo/all');
+      setPlos(response.data);
+    } catch (error) {
+      console.error("Error fetching PLOs:", error);
+    }
+  };
+
+  const handleSave = async () => {
+    if (editMode) {
+      handleUpdate();
+    } else {
+      try {
+        const ploResponse = await axios.post('http://localhost:4000/api/plo', {
+          description,
+          program_id: selectedProgram,
+          session_id: selectedSession,
+          plo_name: ploName
+        });
+
+        setResponseMessage("PLO added successfully!");
+        setResponseType('success');
+        fetchPlos();
+        handleCancel();
+      } catch (error) {
+        console.error("Error saving PLO:", error);
+        setResponseMessage("Failed to add PLO. Please try again.");
+        setResponseType('error');
+      } finally {
+        setTimeout(() => {
+          setResponseMessage("");
+          setResponseType('');
+        }, 4000);
+      }
+    }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      await axios.put(`http://localhost:4000/api/plo/${editPloId}`, {
         description,
         program_id: selectedProgram,
         session_id: selectedSession,
         plo_name: ploName
       });
-
-      setResponseMessage("PLO added successfully!");
+      setResponseMessage("PLO updated successfully!");
       setResponseType('success');
-
-      // Clear input fields on successful save
-      setDescription('');
-      setPloName('');
-      setSelectedProgram('');
-      setSelectedSession('');
-      setTimeout(() => {
-        setResponseMessage("");
-      setResponseType('');
-      }, 4000);
+      fetchPlos();
+      handleCancel();
     } catch (error) {
-      console.error("Error saving PLO:", error);
-      setResponseMessage("Failed to add PLO. Please try again.");
+      console.error("Error updating PLO:", error);
+      setResponseMessage("Failed to update PLO. Please try again.");
       setResponseType('error');
+    } finally {
       setTimeout(() => {
         setResponseMessage("");
-      setResponseType('');
+        setResponseType('');
       }, 4000);
     }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:4000/api/plo/${id}`);
+      setResponseMessage("PLO deleted successfully!");
+      setResponseType('success');
+      fetchPlos();
+    } catch (error) {
+      console.error("Error deleting PLO:", error);
+      setResponseMessage("Failed to delete PLO. Please try again.");
+      setResponseType('error');
+    } finally {
+      setTimeout(() => {
+        setResponseMessage("");
+        setResponseType('');
+      }, 4000);
+    }
+  };
+
+  const handleEdit = (plo) => {
+    setDescription(plo.description);
+    setPloName(plo.plo_name);
+    setSelectedProgram(plo.program_id);
+    setSelectedSession(plo.session_id);
+    setEditMode(true);
+    setEditPloId(plo.id);
   };
 
   const handleCancel = () => {
@@ -64,9 +128,43 @@ const AddPLO = () => {
     setPloName('');
     setSelectedProgram('');
     setSelectedSession('');
+    setEditMode(false);
+    setEditPloId(null);
     setResponseMessage('');
     setResponseType('');
   };
+
+  const columns = [
+    {
+      name: 'PLO Name',
+      selector: row => row.plo_name,
+      sortable: true,
+    },
+    {
+      name: 'Description',
+      selector: row => row.description,
+      sortable: true,
+    },
+    {
+      name: 'Program',
+      selector: row => programs.find(program => program.id === row.program_id)?.name,
+      sortable: true,
+    },
+    {
+      name: 'Session',
+      selector: row => `${sessions.find(session => session.id === row.session_id)?.start_year} - ${sessions.find(session => session.id === row.session_id)?.end_year}`,
+      sortable: true,
+    },
+    {
+      name: 'Actions',
+      cell: row => (
+        <>
+          <button className="button edit-button" onClick={() => handleEdit(row)}>Edit</button>
+          <button className="button delete-button" onClick={() => handleDelete(row.id)}>Delete</button>
+        </>
+      ),
+    },
+  ];
 
   return (
     <div className='PLOContainer'>
@@ -98,12 +196,18 @@ const AddPLO = () => {
         </select>
       </div>
       <div className='rp button-group'>
-        <button className='button save-button' onClick={handleSave}>Save</button>
+        <button className='button save-button' onClick={handleSave}>{editMode ? 'Update' : 'Save'}</button>
         <button className='button cancel-button' onClick={handleCancel}>Cancel</button>
       </div>
       <div>
         <p className={`message ${responseType}`}>{responseMessage}</p>
       </div>
+      <h3 className="heading">Manage PLOs</h3>
+      <DataTable
+        columns={columns}
+        data={plos}
+        pagination
+      />
     </div>
   );
 };

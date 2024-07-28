@@ -23,6 +23,7 @@ import Mapping from "./Pages/SOS-Courses/Mapping.js";
 import ViewSOS from "./Pages/SOS-Courses/ViewSOS.js";
 import profile from '../Resources/profileavatar.png'
 import AssignTeacher from "./Pages/SOS-Courses/Assign_Teacher.js";
+import AssignStudent from "./Pages/SOS-Courses/assignStudent.js";
 
 const Main = () => {
   const navigate = useNavigate(); 
@@ -128,6 +129,9 @@ const Main = () => {
               <p className="tags" onClick={() => handlePageChange("assignTeacher")}>
                 Assign Teacher
               </p>
+              <p className="tags" onClick={() => handlePageChange("assignStudent")}>
+                Assign Student
+              </p>
               <p className="tags" onClick={() => handlePageChange("addplo")}>
                 Add PLO
               </p>
@@ -172,6 +176,7 @@ const Main = () => {
           {currentPage === "addsemester" && <AddSemester />}
           {currentPage === "addcourse" && <AddCourse />}
           {currentPage === "assignTeacher" && <AssignTeacher />}
+          {currentPage === "assignStudent" && <AssignStudent />}
           {currentPage === "addplo" && <AddPLO />}
           {currentPage === "addclo" && <AddCLO />}
           {currentPage === "mapping" && <Mapping />}

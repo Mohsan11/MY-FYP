@@ -1,0 +1,13 @@
+.teachdashboard-backButton {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .teachdashboard-backButton:hover {
+    background-color: #0056b3;
+  }
+  

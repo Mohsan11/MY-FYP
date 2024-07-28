@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './mapping.css'; // Make sure you have a CSS file for styling
+import './mapping.css';
 
 const Mapping = () => {
   const [cloId, setCloId] = useState('');
@@ -13,6 +13,9 @@ const Mapping = () => {
   const [courses, setCourses] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [programs, setPrograms] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState('');
+  const [selectedSession, setSelectedSession] = useState('');
+  const [selectedProgram, setSelectedProgram] = useState('');
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -107,15 +110,55 @@ const Mapping = () => {
     }
   };
 
+  // Filter CLOs based on selected course and session
+  const filteredClos = clos.filter(clo => 
+    (selectedCourse ? clo.course_id === parseInt(selectedCourse) : true) &&
+    (selectedSession ? clo.session_id === parseInt(selectedSession) : true)
+  );
+
+  // Filter PLOs based on selected program
+  const filteredPlos = plos.filter(plo => 
+    selectedProgram ? plo.program_id === parseInt(selectedProgram) : true
+  );
+
   return (
     <div className='MappingContainer'>
       <h2 className="heading">CLO-PLO Mapping</h2>
+      <div className='lp'>
+        <label>Select Program:</label>
+        <select value={selectedProgram} onChange={(e) => setSelectedProgram(e.target.value)}>
+          <option value="">All Programs</option>
+          {programs.map(program => (
+            <option key={program.id} value={program.id}>{program.name}</option>
+          ))}
+        </select>
+      </div>
+      
+      <div className='lp'>
+        <label>Select Session:</label>
+        <select value={selectedSession} onChange={(e) => setSelectedSession(e.target.value)}>
+          <option value="">All Sessions</option>
+          {sessions.map(session => (
+            <option key={session.id} value={session.id}>{session.start_year}-{session.end_year}</option>
+          ))}
+        </select>
+      </div>
+     
+      <div className='lp'>
+        <label>Select Course:</label>
+        <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
+          <option value="">All Courses</option>
+          {courses.map(course => (
+            <option key={course.id} value={course.id}>{course.name}</option>
+          ))}
+        </select>
+      </div>
       
       <div className='lp'>
         <label>Select CLO:</label>
         <select value={cloId} onChange={(e) => setCloId(e.target.value)}>
           <option value="" disabled>Select CLO</option>
-          {clos.map(clo => (
+          {filteredClos.map(clo => (
             <option key={clo.id} value={clo.id}>
               {clo.clo_name} (Course: {clo.course_name}, Session: {clo.session_name}) - {clo.description}
             </option>
@@ -126,7 +169,7 @@ const Mapping = () => {
         <label>Select PLO:</label>
         <select value={ploId} onChange={(e) => setPloId(e.target.value)}>
           <option value="" disabled>Select PLO</option>
-          {plos.map(plo => (
+          {filteredPlos.map(plo => (
             <option key={plo.id} value={plo.id}>{plo.plo_name} (Program: {plo.program_name})(description: {plo.description})</option>
           ))}
         </select>

@@ -6,7 +6,7 @@ import Register from "./Components/Login/Staff/Register/register";
 import Login from "./Components/Login/Staff/Login/staff";
 import Main from "./Components/Coordinator/Main";
 import StudentDashboard from "./Components/Students/Dashboard/studentDashboard";
-import TeacherDasboard from"./Components/Teacher/Dashboard/teacherDashboard"
+import TeacherMain from"./Components/Teacher/Dashboard/teacherMain"
 import UpdateStudent from "./Components/Coordinator/Pages/manage staff/Student/updatestudent";
 import UpdateTeacher from "./Components/Coordinator/Pages/manage staff/Teacher/updateTeacher";
 import UpdateCoordinator from "./Components/Coordinator/Pages/manage staff/Staff/updateCoordinator";
@@ -23,7 +23,7 @@ function App() {
           <Route path="/main" element={<Main />} />
           <Route path="/coordinator" element={<Main />} />
           <Route path="/studentdashboard" element={<StudentDashboard />} />
-          <Route path="/teacherDashboard" element={<TeacherDasboard />} />
+          <Route path="/teacherDashboard" element={<TeacherMain />} />
           <Route path="/update-student/:id" element={<UpdateStudent />} />
           <Route path="/update-coordinator/:id" element={<UpdateCoordinator />} />
           <Route path="/update-teacher/:id" element={<UpdateTeacher />} />

@@ -5,7 +5,7 @@ import './addsemester.css';
 const AddSemester = () => {
   const [semesterName, setSemesterName] = useState('');
   const [semesterNumber, setSemesterNumber] = useState('');
-  const [semesterTerm, setSemesterTerm] = useState('');
+  // const [semesterTerm, setSemesterTerm] = useState('');
   const [sessions, setSessions] = useState([]);
   const [selectedSession, setSelectedSession] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
@@ -24,7 +24,7 @@ const AddSemester = () => {
       const semesterResponse = await axios.post('http://localhost:4000/api/semester', {
         name: semesterName,
         number: semesterNumber,
-        term: semesterTerm,
+        // term: semesterTerm,
         session_id: selectedSession
       });
 
@@ -34,7 +34,7 @@ const AddSemester = () => {
       // Clear input fields on successful save
       setSemesterName('');
       setSemesterNumber('');
-      setSemesterTerm('');
+      // setSemesterTerm('');
       setSelectedSession('');
         setTimeout(() => {
         setResponseMessage("");
@@ -55,7 +55,7 @@ const AddSemester = () => {
     // Clear input fields on cancel
     setSemesterName('');
     setSemesterNumber('');
-    setSemesterTerm('');
+    // setSemesterTerm('');
     setSelectedSession('');
     setResponseMessage('');
     setResponseType('');
@@ -66,16 +66,16 @@ const AddSemester = () => {
       <h2 className="heading">Add Semester</h2>
       <div className='lp'>
         <label>Name:</label>
-        <input className="input" type="text" value={semesterName} onChange={(e) => setSemesterName(e.target.value)} />
+        <input className="input" type="text" value={semesterName} placeholder='Fall 2020' onChange={(e) => setSemesterName(e.target.value)} />
       </div>
       <div className='lp'>
         <label>Number:</label>
-        <input className="input" type="number" value={semesterNumber} onChange={(e) => setSemesterNumber(e.target.value)} />
+        <input className="input" type="number" placeholder='1' value={semesterNumber} onChange={(e) => setSemesterNumber(e.target.value)} />
       </div>
-      <div className='lp'>
+      {/* <div className='lp'>
         <label>Term:</label>
-        <input className="input" type="text" value={semesterTerm} onChange={(e) => setSemesterTerm(e.target.value)} />
-      </div>
+        <input className="input" type="text"  value={semesterTerm} onChange={(e) => setSemesterTerm(e.target.value)} />
+      </div> */}
       <div className='lp'>
         <label>Select Session:</label>
         <select value={selectedSession} onChange={(e) => setSelectedSession(e.target.value)}>
