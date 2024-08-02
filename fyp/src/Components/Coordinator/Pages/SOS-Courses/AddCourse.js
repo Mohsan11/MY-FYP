@@ -12,9 +12,13 @@ const AddCourse = () => {
   const [selectedSession, setSelectedSession] = useState('');
   const [semesters, setSemesters] = useState([]);
   const [selectedSemester, setSelectedSemester] = useState('');
+  const [theoryCredit, setTheoryCredit] = useState(1);
+  const [labCredit, setLabCredit] = useState(0);
   const [responseMessage, setResponseMessage] = useState('');
   const [responseType, setResponseType] = useState('');
   const [courses, setCourses] = useState([]);
+  const [editMode, setEditMode] = useState(false);
+  const [editCourseId, setEditCourseId] = useState(null);
 
   useEffect(() => {
     const fetchPrograms = async () => {
@@ -76,32 +80,57 @@ const AddCourse = () => {
   };
 
   const handleSave = async () => {
-    try {
-      const courseResponse = await axios.post('http://localhost:4000/api/courses', {
-        name: courseName,
-        code: courseCode,
-        program_id: selectedProgram,
-        semester_id: selectedSemester
-      });
+    if (theoryCredit + labCredit > 4) {
+      setResponseMessage("Total credit hours cannot exceed 4.");
+      setResponseType('error');
+      setTimeout(() => {
+        setResponseMessage("");
+        setResponseType('');
+      }, 5000);
+      return;
+    }
 
-      setResponseMessage("Course added successfully!");
+    try {
+      if (editMode) {
+        await axios.put(`http://localhost:4000/api/courses/${editCourseId}`, {
+          name: courseName,
+          code: courseCode,
+          program_id: selectedProgram,
+          semester_id: selectedSemester,
+          theory_credit: theoryCredit,
+          lab_credit: labCredit,
+        });
+        setResponseMessage("Course updated successfully!");
+      } else {
+        await axios.post('http://localhost:4000/api/courses', {
+          name: courseName,
+          code: courseCode,
+          program_id: selectedProgram,
+          semester_id: selectedSemester,
+          theory_credit: theoryCredit,
+          lab_credit: labCredit,
+        });
+        setResponseMessage("Course added successfully!");
+      }
+
       setResponseType('success');
       setCourseName('');
       setCourseCode('');
-      // setSelectedProgram('');
-      // setSelectedSession('');
-      // setSelectedSemester('');
-
+      setSelectedProgram('');
+      setSelectedSession('');
+      setSelectedSemester('');
+      setTheoryCredit(1);
+      setLabCredit(0);
+      setEditMode(false);
       fetchCourses();
 
       setTimeout(() => {
         setResponseMessage("");
         setResponseType('');
       }, 5000);
-
     } catch (error) {
       console.error("Error saving course:", error);
-      setResponseMessage("Failed to add Course. Please try again.");
+      setResponseMessage(editMode ? "Failed to update Course. Please try again." : "Failed to add Course. Please try again.");
       setResponseType('error');
       setTimeout(() => {
         setResponseMessage("");
@@ -116,8 +145,11 @@ const AddCourse = () => {
     setSelectedProgram('');
     setSelectedSession('');
     setSelectedSemester('');
+    setTheoryCredit(1);
+    setLabCredit(0);
     setResponseMessage('');
     setResponseType('');
+    setEditMode(false);
   };
 
   const handleDelete = async (courseId) => {
@@ -146,6 +178,18 @@ const AddCourse = () => {
     }, 5000);
   };
 
+  const handleEdit = (course) => {
+    setCourseName(course.course_name);
+    setCourseCode(course.course_code);
+    setSelectedProgram(course.program_id);
+    setSelectedSession(course.session_id);
+    setSelectedSemester(course.semester_id);
+    setTheoryCredit(course.theory_credit);
+    setLabCredit(course.lab_credit);
+    setEditCourseId(course.id);
+    setEditMode(true);
+  };
+
   const columns = [
     {
       name: 'Course Name',
@@ -169,29 +213,52 @@ const AddCourse = () => {
     },
     {
       name: 'Semester No',
-      selector: row => `
-      ${row.semester_number}`,
+      selector: row => `${row.semester_name} - ${row.semester_number}`,
       sortable: true,
     },
-    // ${row.semester_name} - 
+    {
+      name: 'Theory Credit',
+      selector: row => row.theory_credit,
+      sortable: true,
+    },
+    {
+      name: 'Lab Credit',
+      selector: row => row.lab_credit,
+      sortable: true,
+    },
     {
       name: 'Actions',
       cell: row => (
-        <button onClick={() => handleDelete(row.id)}>Delete</button>
+        <>
+          <button onClick={() => handleEdit(row)}>Edit</button>
+          <button onClick={() => handleDelete(row.id)}>Delete</button>
+        </>
       ),
     },
   ];
 
   return (
     <div className='CourseContainer'>
-      <h2 className="heading">Add Course</h2>
+      <h2 className="heading">{editMode ? 'Edit Course' : 'Add Course'}</h2>
       <div className='lp'>
         <label>Course Name:</label>
-        <input className="input" type="text" placeholder='Object Oriented Programming' value={courseName} onChange={(e) => setCourseName(e.target.value)} />
+        <input
+          className="input"
+          type="text"
+          placeholder='Object Oriented Programming'
+          value={courseName}
+          onChange={(e) => setCourseName(e.target.value)}
+        />
       </div>
       <div className='lp'>
         <label>Course Code:</label>
-        <input className="input" type="text" placeholder='BCS-1203' value={courseCode} onChange={(e) => setCourseCode(e.target.value)} />
+        <input
+          className="input"
+          type="text"
+          placeholder='BCS-1203'
+          value={courseCode}
+          onChange={(e) => setCourseCode(e.target.value)}
+        />
       </div>
       <div className='lp'>
         <label>Select Program:</label>
@@ -218,18 +285,37 @@ const AddCourse = () => {
           {semesters.map(semester => (
             <option key={semester.id} value={semester.id}>
               {semester.name} - {semester.number}
-              </option>
+            </option>
           ))}
         </select>
       </div>
+      <div className='lp'>
+        <label>Theory Credit Hours:</label>
+        <input
+          type="number"
+          value={theoryCredit}
+          min="1"
+          max="3"
+          onChange={(e) => setTheoryCredit(Number(e.target.value))}
+        />
+      </div>
+      <div className='lp'>
+        <label>Lab Credit Hours:</label>
+        <input
+          type="number"
+          value={labCredit}
+          min="0"
+          max="2"
+          onChange={(e) => setLabCredit(Number(e.target.value))}
+        />
+      </div>
       <div className='rp button-group'>
-        <button className='button save-button' onClick={handleSave}>Save</button>
+        <button className='button save-button' onClick={handleSave}>{editMode ? 'Update' : 'Save'}</button>
         <button className='button cancel-button' onClick={handleCancel}>Cancel</button>
       </div>
       <div>
         <p className={`message ${responseType}`}>{responseMessage}</p>
       </div>
-      
       <h3>Courses</h3>
       <DataTable
         columns={columns}
