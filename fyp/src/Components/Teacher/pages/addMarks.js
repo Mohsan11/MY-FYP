@@ -15,7 +15,6 @@ const AddMarks = ({ teacherId }) => {
   const [messageType, setMessageType] = useState(''); // 'success' or 'error'
 
   useEffect(() => {
-    // Fetch courses for the teacher
     axios.get(`http://localhost:4000/api/teacherCourseAssignment/teacher/${teacherId}`)
       .then(response => {
         setCourses(response.data);
@@ -29,7 +28,6 @@ const AddMarks = ({ teacherId }) => {
     const courseId = event.target.value;
     setSelectedCourse(courseId);
 
-    // Fetch students enrolled in the selected course
     axios.get(`http://localhost:4000/api/studentenrollments/course/${courseId}`)
       .then(response => {
         setStudents(response.data);
@@ -38,7 +36,6 @@ const AddMarks = ({ teacherId }) => {
         console.error('Error fetching students:', error);
       });
 
-    // Fetch assessments for the selected course
     axios.get(`http://localhost:4000/api/assessments/course/${courseId}`)
       .then(response => {
         setAssessments(response.data);
@@ -51,17 +48,17 @@ const AddMarks = ({ teacherId }) => {
   const handleAssessmentChange = (event) => {
     const assessmentId = event.target.value;
     setSelectedAssessment(assessmentId);
-
-    // Fetch questions for the selected assessment
+  
     axios.get(`http://localhost:4000/api/questions/assessment/${assessmentId}`)
       .then(response => {
+        console.log('Questions data:', response.data);
         setQuestions(response.data);
       })
       .catch(error => {
         console.error('Error fetching questions:', error);
       });
   };
-
+  
   const handleMarkChange = (questionId, studentId, event) => {
     const value = event.target.value;
     setMarks(prevMarks => ({
@@ -79,32 +76,53 @@ const AddMarks = ({ teacherId }) => {
       return Object.keys(questionMarks).map(studentId => {
         const obtainedMarks = questionMarks[studentId];
         const totalMarks = questions.find(q => q.id === parseInt(questionId))?.marks;
-
+  
         if (!studentId || !questionId || !totalMarks || !obtainedMarks) {
           console.error('Invalid data:', { studentId, questionId, totalMarks, obtainedMarks });
           setMessage('Error saving marks. Please check the input data.');
           setMessageType('error');
           return Promise.reject('Invalid data');
         }
-        
+  
         return axios.post('http://localhost:4000/api/marks', {
           student_id: studentId,
           question_id: questionId,
+          assessment_id: selectedAssessment,
           total_marks: totalMarks,
           obtained_marks: obtainedMarks
         });
       });
     });
-
+  
     Promise.all(markPromises)
+      .then(markResponses => {
+        return axios.get(`http://localhost:4000/api/assessments/marks/assessment/${selectedAssessment}`)
+          .then(response => {
+            const marksData = response.data;
+            const totalMarksSum = marksData.reduce((sum, mark) => sum + mark.total_marks, 0);
+            const obtainedMarksSum = marksData.reduce((sum, mark) => sum + mark.obtained_marks, 0);
+  
+            return axios.get(`http://localhost:4000/api/assessments/${selectedAssessment}`)
+              .then(response => {
+                const normalizedTotalMarks = response.data.normalized_total_marks;
+                const normalizedObtainedMarks = (obtainedMarksSum / totalMarksSum) * normalizedTotalMarks;
+  
+                return axios.post('http://localhost:4000/api/results', {
+                  final_total_marks: normalizedTotalMarks,
+                  final_obtained_marks: normalizedObtainedMarks,
+                  assessment_id: selectedAssessment
+                });
+              });
+          });
+      })
       .then(() => {
-        setMessage('Marks saved successfully');
+        setMessage('Marks and results saved successfully');
         setMessageType('success');
       })
       .catch(error => {
-        setMessage('Error saving marks');
+        setMessage('Error saving marks and results');
         setMessageType('error');
-        console.error('Error saving marks:', error);
+        console.error('Error saving marks and results:', error);
       })
       .finally(() => {
         setTimeout(() => {
@@ -113,6 +131,11 @@ const AddMarks = ({ teacherId }) => {
         }, 3000);
       });
   };
+  
+  
+
+  
+  
 
   const studentColumns = [
     { name: 'Student Name', selector: row => row.student_name, sortable: true },

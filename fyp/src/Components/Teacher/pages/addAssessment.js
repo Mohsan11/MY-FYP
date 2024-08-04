@@ -13,6 +13,7 @@ const AddAssessment = ({ course, teacherId }) => {
   const [assessmentId, setAssessmentId] = useState(null);
   const [questions, setQuestions] = useState([{ question_text: '', clo_id: '', marks: '' }]);
   const [clos, setClos] = useState([]);
+  const [courseDetails, setCourseDetails] = useState(null);
 
   useEffect(() => {
     const fetchTeacherCourses = async () => {
@@ -24,6 +25,7 @@ const AddAssessment = ({ course, teacherId }) => {
         if (!course && fetchedCourses.length > 0) {
           setSelectedCourseId(fetchedCourses[0].id);
           setSelectedSemesterId(fetchedCourses[0].semester_id);
+          fetchCourseDetails(fetchedCourses[0].id);
         }
       } catch (error) {
         console.error("Error fetching courses:", error);
@@ -58,8 +60,18 @@ const AddAssessment = ({ course, teacherId }) => {
       };
 
       fetchClos();
+      fetchCourseDetails(selectedCourseId);
     }
   }, [selectedCourseId]);
+
+  const fetchCourseDetails = async (courseId) => {
+    try {
+      const courseDetailsResponse = await axios.get(`http://localhost:4000/api/courses/${courseId}`);
+      setCourseDetails(courseDetailsResponse.data);
+    } catch (error) {
+      console.error("Error fetching course details:", error);
+    }
+  };
 
   const handleSave = async () => {
     try {
@@ -100,7 +112,12 @@ const AddAssessment = ({ course, teacherId }) => {
 
   const handleQuestionChange = (index, field, value) => {
     const updatedQuestions = [...questions];
-    updatedQuestions[index][field] = value;
+    updatedQuestions[index][field] = value === "" ? null : value;  // Convert empty string to null
+    setQuestions(updatedQuestions);
+  };
+
+  const handleRemoveQuestion = (index) => {
+    const updatedQuestions = questions.filter((_, i) => i !== index);
     setQuestions(updatedQuestions);
   };
 
@@ -112,7 +129,7 @@ const AddAssessment = ({ course, teacherId }) => {
           assessment_id: assessmentId
         })
       ));
-      console.log(...questions, assessmentId)
+      console.log(...questions, assessmentId);
       setResponseMessage("Questions added successfully!");
       setResponseType('success');
 
@@ -123,7 +140,7 @@ const AddAssessment = ({ course, teacherId }) => {
 
       setQuestions([{ question_text: '', clo_id: '', marks: '' }]);
     } catch (error) {
-      console.log(...questions, assessmentId)
+      console.log(...questions, assessmentId);
       console.error("Error adding questions:", error);
       setResponseMessage("Failed to add questions. Please try again.");
       setResponseType('error');
@@ -133,6 +150,25 @@ const AddAssessment = ({ course, teacherId }) => {
         setResponseType('');
       }, 4000);
     }
+  };
+
+  const renderAssessmentTypeOptions = () => {
+    if (!courseDetails) return null;
+
+    const options = [];
+    if (courseDetails.theory_credit_hours > 0) {
+      options.push(<option key="quiz" value="quiz">Quiz</option>);
+      options.push(<option key="assignment" value="assignment">Assignment</option>);
+      options.push(<option key="midterm" value="midterm">Mid Term</option>);
+      options.push(<option key="terminal" value="terminal">Terminal</option>);
+    }
+    if (courseDetails.lab_credit_hours > 0) {
+      options.push(<option key="lab_assignment" value="lab_assignment">Lab Assignment</option>);
+      options.push(<option key="lab_midterm" value="lab_midterm">Lab Mid Term</option>);
+      options.push(<option key="lab_terminal" value="lab_terminal">Lab Terminal</option>);
+    }
+
+    return options;
   };
 
   return (
@@ -146,10 +182,7 @@ const AddAssessment = ({ course, teacherId }) => {
         <label>Assessment Type:</label>
         <select value={assessmentType} onChange={(e) => setAssessmentType(e.target.value)}>
           <option value="" disabled>Select Type</option>
-          <option value="quiz">Quiz</option>
-          <option value="assignment">Assignment</option>
-          <option value="midterm">Mid Term</option>
-          <option value="terminal">Terminal</option>
+          {renderAssessmentTypeOptions()}
         </select>
       </div>
       <div className='lp'>
@@ -201,19 +234,21 @@ const AddAssessment = ({ course, teacherId }) => {
               <div className='lp'>
                 <label>Select CLO:</label>
                 <select
-                  value={question.clo_id}
-                  onChange={(e) => handleQuestionChange(index, 'clo_id', e.target.value)}
+                  value={question.clo_id || ""}
+                  onChange={(e) => handleQuestionChange(index, 'clo_id', e.target.value || null)}
                 >
-                  <option value="" disabled>Select CLO</option>
-                  {clos.map(clo => (
-                    <option key={clo.id} value={clo.id}>{clo.clo_name}- {clo.description}</option>
-                  ))}
+                <option value="" disabled>Select CLO</option>
+                {clos.map(clo => (
+                  <option key={clo.id} value={clo.id}>{clo.clo_name} - {clo.description}</option>
+                ))}
                 </select>
+              </div> <div className='rp button-group'>
+              <button className='button save-button add-button' onClick={handleAddQuestion}>Add Question</button>
+              <button className='button cancel-button remove-button' onClick={() => handleRemoveQuestion(index)}>Remove Question</button>
               </div>
             </div>
           ))}
           <div className='rp button-group'>
-            <button className='button add-button' onClick={handleAddQuestion}>Add Another Question</button>
             <button className='button save-button' onClick={handleSaveQuestions}>Save Questions</button>
           </div>
         </div>
