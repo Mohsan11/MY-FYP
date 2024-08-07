@@ -31,15 +31,35 @@ const Student = () => {
       if (!response.ok) {
         throw new Error("Invalid credentials");
       }
-
       const data = await response.json();
+      // localStorage.setItem("token", data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          id: data.student.id,
+          student_name: data.student.student_name,
+          roll_number: data.student.roll_number,
+          email: data.student.email,
+          program_id: data.student.program_id,
+          session_id: data.student.session_id,
+        })
+      );
       console.log("Login successful:", data);
-
       // Store student data in local storage
       localStorage.setItem("studentData", JSON.stringify(data.student));
 
       // Redirect to dashboard upon successful login
-      navigate("/studentdashboard");
+      navigate("/studentMain", {
+          state: {
+            id: data.student.id,
+            student_name: data.student.student_name,
+            roll_number: data.student.roll_number,
+            email: data.student.email,
+            program_id: data.student.program_id,
+            session_id: data.student.session_id,
+          },
+        }
+      );
     } catch (error) {
       console.error("Login error:", error.message);
       setError("Invalid credentials. Please try again.");

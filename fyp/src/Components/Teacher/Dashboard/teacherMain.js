@@ -56,7 +56,7 @@ const TeacherMain = () => {
       case "addMarks":
         return <AddMarks course={selectedCourse} teacherId={id} />;
       case "results":
-        return <Results />;
+        return <Results  course={selectedCourse} teacherId={id}/>;
       case "viewAssessments":
         return <ViewAssessments courseId={selectedCourse?.id} />;
       case "viewStudents":
