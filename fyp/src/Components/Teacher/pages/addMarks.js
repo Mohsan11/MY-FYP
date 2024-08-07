@@ -13,6 +13,7 @@ const AddMarks = ({ teacherId }) => {
   const [showMarksPage, setShowMarksPage] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+  const [selectedStudent, setSelectedStudent] = useState(null); // Store selected student
 
   useEffect(() => {
     axios.get(`http://localhost:4000/api/teacherCourseAssignment/teacher/${teacherId}`)
@@ -27,6 +28,13 @@ const AddMarks = ({ teacherId }) => {
   const handleCourseChange = (event) => {
     const courseId = event.target.value;
     setSelectedCourse(courseId);
+    setStudents([]);
+    setAssessments([]);
+    setSelectedAssessment('');
+    setQuestions([]);
+    setMarks({});
+    setShowMarksPage(false);
+    setSelectedStudent(null);
 
     axios.get(`http://localhost:4000/api/studentenrollments/course/${courseId}`)
       .then(response => {
@@ -48,17 +56,18 @@ const AddMarks = ({ teacherId }) => {
   const handleAssessmentChange = (event) => {
     const assessmentId = event.target.value;
     setSelectedAssessment(assessmentId);
-  
+    setQuestions([]);
+    setMarks({});
+
     axios.get(`http://localhost:4000/api/questions/assessment/${assessmentId}`)
       .then(response => {
-        console.log('Questions data:', response.data);
         setQuestions(response.data);
       })
       .catch(error => {
         console.error('Error fetching questions:', error);
       });
   };
-  
+
   const handleMarkChange = (questionId, studentId, event) => {
     const value = event.target.value;
     setMarks(prevMarks => ({
@@ -76,43 +85,63 @@ const AddMarks = ({ teacherId }) => {
       return Object.keys(questionMarks).map(studentId => {
         const obtainedMarks = questionMarks[studentId];
         const totalMarks = questions.find(q => q.id === parseInt(questionId))?.marks;
-  
+
         if (!studentId || !questionId || !totalMarks || !obtainedMarks) {
           console.error('Invalid data:', { studentId, questionId, totalMarks, obtainedMarks });
           setMessage('Error saving marks. Please check the input data.');
           setMessageType('error');
           return Promise.reject('Invalid data');
         }
-  
+
         return axios.post('http://localhost:4000/api/marks', {
           student_id: studentId,
           question_id: questionId,
           assessment_id: selectedAssessment,
           total_marks: totalMarks,
           obtained_marks: obtainedMarks
+        }).then(response => {
+          console.log('Mark saved:', response.data);
+          return response.data;
+        }).catch(error => {
+          console.error('Error saving mark:', error);
+          return Promise.reject(error);
         });
       });
     });
-  
+
     Promise.all(markPromises)
       .then(markResponses => {
-        return axios.get(`http://localhost:4000/api/assessments/marks/assessment/${selectedAssessment}`)
+        console.log('All marks saved:', markResponses);
+        return axios.get(`http://localhost:4000/api/assessments/${selectedAssessment}`)
           .then(response => {
-            const marksData = response.data;
-            const totalMarksSum = marksData.reduce((sum, mark) => sum + mark.total_marks, 0);
-            const obtainedMarksSum = marksData.reduce((sum, mark) => sum + mark.obtained_marks, 0);
-  
-            return axios.get(`http://localhost:4000/api/assessments/${selectedAssessment}`)
-              .then(response => {
-                const normalizedTotalMarks = response.data.normalized_total_marks;
-                const normalizedObtainedMarks = (obtainedMarksSum / totalMarksSum) * normalizedTotalMarks;
-  
-                return axios.post('http://localhost:4000/api/results', {
-                  final_total_marks: normalizedTotalMarks,
-                  final_obtained_marks: normalizedObtainedMarks,
-                  assessment_id: selectedAssessment
-                });
-              });
+            const assessmentData = response.data;
+            const totalMarksSum = markResponses.reduce((sum, mark) => sum + mark.total_marks, 0);
+            const obtainedMarksSum = markResponses.reduce((sum, mark) => sum + mark.obtained_marks, 0);
+
+            const normalizedTotalMarks = assessmentData.normalized_total_marks;
+            const normalizedObtainedMarks = (obtainedMarksSum / totalMarksSum) * normalizedTotalMarks;
+
+            if (!selectedStudent || !selectedStudent.student_id) {
+              console.error('Selected student is not properly set:', selectedStudent);
+              setMessage('Error: Selected student is not set.');
+              setMessageType('error');
+              return Promise.reject('Selected student is not set');
+            }
+
+            return axios.post('http://localhost:4000/api/results', {
+              final_total_marks: normalizedTotalMarks,
+              final_obtained_marks: normalizedObtainedMarks,
+              assessment_id: selectedAssessment,
+              student_id: selectedStudent.student_id,
+              assessment_name: assessmentData.assessment_name,
+              assessment_type: assessmentData.assessment_type
+            }).then(response => {
+              console.log('Result saved:', response.data);
+              return response.data;
+            }).catch(error => {
+              console.error('Error saving result:', error);
+              return Promise.reject(error);
+            });
           });
       })
       .then(() => {
@@ -131,11 +160,18 @@ const AddMarks = ({ teacherId }) => {
         }, 3000);
       });
   };
-  
-  
 
-  
-  
+  const handleAddMarksClick = (student) => {
+    setSelectedStudent(student); // Store the selected student
+    setShowMarksPage(true);
+  };
+
+  const handleBackClick = () => {
+    setShowMarksPage(false);
+    setSelectedStudent(null);
+    setMarks({});
+    setQuestions([]);
+  };
 
   const studentColumns = [
     { name: 'Student Name', selector: row => row.student_name, sortable: true },
@@ -144,7 +180,7 @@ const AddMarks = ({ teacherId }) => {
     {
       name: 'Action',
       cell: (row) => (
-        <button onClick={() => setShowMarksPage(true)}>Add Marks</button>
+        <button onClick={() => handleAddMarksClick(row)}>Add Marks</button>
       ),
       ignoreRowClick: true,
       allowOverflow: true,
@@ -170,14 +206,12 @@ const AddMarks = ({ teacherId }) => {
     },
   ];
 
-  const data = students.flatMap(student =>
-    questions.map(question => ({
-      ...student,
-      question_text: question.question_text,
-      marks: question.marks,
-      question_id: question.id,
-    }))
-  );
+  const data = selectedStudent ? questions.map(question => ({
+    ...selectedStudent,
+    question_text: question.question_text,
+    marks: question.marks,
+    question_id: question.id,
+  })) : [];
 
   return (
     <div>
@@ -206,7 +240,7 @@ const AddMarks = ({ teacherId }) => {
         </>
       ) : (
         <div>
-          <h2>Add Marks for Students</h2>
+          <h2>Add Marks for Student: {selectedStudent?.student_name}</h2>
           <div>
             <label htmlFor="assessment">Select Assessment:</label>
             <select id="assessment" value={selectedAssessment} onChange={handleAssessmentChange}>
@@ -228,23 +262,16 @@ const AddMarks = ({ teacherId }) => {
               />
               <div className='rp button-group'>
                 <button className='button save-button' onClick={handleSubmit}>Save Marks</button>
+                <button className='button back-button' onClick={handleBackClick}>Back</button>
               </div>
+              {message && (
+                <div className={`message ${messageType}`}>
+                  {message}
+                </div>
+              )}
             </>
           )}
         </div>
-      )}
-      {message && (
-        <p style={{
-          color: messageType === 'success' ? 'green' : 'red',
-          border: `1px solid ${messageType === 'success' ? 'green' : 'red'}`,
-          borderRadius: '5px',
-          backgroundColor: messageType === 'success' ? 'lightgreen' : 'lightcoral',
-          padding: '10px',
-          marginTop: '10px',
-          textAlign: 'center'
-        }}>
-          {message}
-        </p>
       )}
     </div>
   );

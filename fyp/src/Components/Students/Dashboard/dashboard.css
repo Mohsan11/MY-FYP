@@ -1,28 +1,54 @@
-.alerts-container {
-    margin: 20px 0;
+
+/* Ensure the dashboard container has some spacing and background */
+.dashboard-container {
+  width: 90%;
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+/* Heading styles */
+h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Alerts container styles */
+.alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Alert box styles */
+.alert {
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+}
+
+/* Specific styles for fail alerts */
+.alert-fail {
+  background-color: #ff6b6b; /* Red background for failures */
+  border-color: #ff4d4d; /* Slightly darker red border */
+}
+
+/* Optional: Add animation for alert fade-out */
+.alert-fade {
+  animation: fadeOut 15s forwards;
+}
+
+/* Fade-out animation */
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
   }
-  
-  .alert {
-    padding: 15px;
-    margin-bottom: 10px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    position: relative;
+  100% {
+    opacity: 0;
   }
-  
-  .alert-danger {
-    color: #a94442;
-    background-color: #f2dede;
-    border-color: #ebccd1;
-  }
-  
-  .alert-close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: transparent;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-  }
-  
+}

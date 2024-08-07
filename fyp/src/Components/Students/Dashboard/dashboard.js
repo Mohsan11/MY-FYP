@@ -1,91 +1,138 @@
 import React, { useEffect, useState } from 'react';
-import './dashboard.css'; // Add styles for alerts here
+import './dashboard.css'; // Import the CSS file
 
-const Dashboard = () => {
-  const [cloProgress, setCloProgress] = useState([]);
-  const [showAlerts, setShowAlerts] = useState([]);
-  const [studentId, setStudentId] = useState(12); // Replace with the actual student_id
-  const [enrolledCourses, setEnrolledCourses] = useState([]);
+const Dashboard = ({ studentId }) => {
+  const [alerts, setAlerts] = useState([]);
+  const [studentDetails, setStudentDetails] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [semesters, setSemesters] = useState([]);
+  const [session, setSession] = useState(null);
+  const [program, setProgram] = useState(null);
 
-  // Fetch the list of courses the student is enrolled in
   useEffect(() => {
-    const fetchEnrolledCourses = async () => {
+    const fetchStudentDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/studentenrollments/student/${studentId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch enrolled courses');
-        }
-        const data = await response.json();
+        // Fetch student details
+        const studentResponse = await fetch(`http://localhost:4000/api/students/${studentId}`);
+        const student = await studentResponse.json();
 
-        if (Array.isArray(data)) {
-          setEnrolledCourses(data);
-        } else {
-          console.error('Expected data to be an array, but got:', data);
-        }
-      } catch (error) {
-        console.error('Error fetching enrolled courses:', error);
-      }
-    };
+        // Fetch program details
+        const programResponse = await fetch(`http://localhost:4000/api/programs/${student.program_id}`);
+        const programData = await programResponse.json();
+        setProgram(programData);
 
-    fetchEnrolledCourses();
-  }, [studentId]);
+        // Fetch session details
+        const sessionResponse = await fetch(`http://localhost:4000/api/session/${student.session_id}`);
+        const sessionData = await sessionResponse.json();
+        setSession(sessionData);
 
-  // Fetch CLO progress data for all enrolled courses
-  useEffect(() => {
-    const fetchAllCloProgress = async () => {
-      try {
-        const progressPromises = enrolledCourses.map(async (enrollment) => {
-          const response = await fetch(`http://localhost:4000/api/assesmentsController/cloProgress/${enrollment.course_id}/${studentId}`);
-          if (!response.ok) {
-            throw new Error(`Failed to fetch CLO progress for course ${enrollment.course_id}`);
+        // Fetch courses
+        const coursesResponse = await fetch(`http://localhost:4000/api/courses/program/${student.program_id}`);
+        const coursesData = await coursesResponse.json();
+        setCourses(coursesData);
+
+        // Fetch semesters
+        const semestersResponse = await fetch(`http://localhost:4000/api/semester/session/${sessionData.id}`);
+        const semestersData = await semestersResponse.json();
+        console.log("Session Data:", sessionData); // Debugging
+        console.log("Semesters Data:", semestersData); // Debugging
+        setSemesters(semestersData);
+
+        // Fetch CLO progress
+        const courseAlerts = [];
+        for (const course of coursesData) {
+          const cloProgressResponse = await fetch(`http://localhost:4000/api/assesmentsController/cloProgress/${course.id}/${studentId}`);
+          const cloProgress = await cloProgressResponse.json();
+          if (Array.isArray(cloProgress)) {
+            const failedCLOs = cloProgress.filter(clo => clo.status === 'Fail');
+            for (const clo of failedCLOs) {
+              const cloResponse = await fetch(`http://localhost:4000/api/clo/${clo.clo_id}`);
+              const cloData = await cloResponse.json();
+              courseAlerts.push({
+                courseName: course.name,
+                cloName: cloData.clo_name
+              });
+            }
           }
-          return response.json();
+        }
+        setAlerts(courseAlerts);
+
+        setStudentDetails({
+          name: student.student_name,
+          programName: programData.name,
+          session: `${sessionData.start_year} - ${sessionData.end_year}`,
+          numberOfCourses: coursesData.length,
+          numberOfSemesters: semestersData.length, // Ensure this reflects the length of fetched data
         });
 
-        const results = await Promise.all(progressPromises);
-        const allCloProgress = results.flat();
-
-        // Log the data to inspect its structure
-        console.log('Fetched CLO progress data:', allCloProgress);
-
-        // Ensure data is an array before applying filter
-        if (Array.isArray(allCloProgress)) {
-          setCloProgress(allCloProgress);
-          // Set alerts for CLOs with status 'Fail'
-          const alerts = allCloProgress.filter(clo => clo.status === 'Fail');
-          setShowAlerts(alerts);
-        } else {
-          console.error('Expected data to be an array, but got:', allCloProgress);
-        }
       } catch (error) {
-        console.error('Error fetching CLO progress:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
-    if (enrolledCourses.length > 0) {
-      fetchAllCloProgress();
-    }
-  }, [enrolledCourses, studentId]);
+    fetchStudentDetails();
+  }, [studentId]);
 
-  const handleCloseAlert = (index) => {
-    setShowAlerts(prevAlerts => prevAlerts.filter((_, i) => i !== index));
-  };
+  useEffect(() => {
+    if (alerts.length > 0) {
+      const timer = setTimeout(() => {
+        setAlerts([]);
+      }, 9000); // Timeout duration for notifications
+
+      return () => clearTimeout(timer);
+    }
+  }, [alerts]);
 
   return (
-    <div>
+    <div className='lp'>
       <h1>Dashboard</h1>
-      {showAlerts.length > 0 && (
-        <div className="alerts-container">
-          {showAlerts.map((alert, index) => (
-            <div key={index} className="alert alert-danger">
-              <p>CLO with ID {alert.clo_id} has failed. Please check your progress.</p>
-              <button className="alert-close-btn" onClick={() => handleCloseAlert(index)}>X</button>
+    <div className="dashboard-container">
+      {alerts.length > 0 && (
+        <div className="alerts">
+          {alerts.map((alert, index) => (
+            <div key={index} className="alert alert-fail">
+              <p>Your course {alert.courseName} has a failed CLO: {alert.cloName}.</p>
             </div>
           ))}
         </div>
       )}
-      {/* Rest of the dashboard content */}
+      {studentDetails && (
+        <div className="student-summary">
+          <h2>Student Summary</h2>
+          <table className="summary-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Student Name</td>
+                <td>{studentDetails.name}</td>
+              </tr>
+              <tr>
+                <td>Program Name</td>
+                <td>{studentDetails.programName}</td>
+              </tr>
+              <tr>
+                <td>Program Session</td>
+                <td>{studentDetails.session}</td>
+              </tr>
+              <tr>
+                <td>Total Number of Enrolled Courses</td>
+                <td>{studentDetails.numberOfCourses}</td>
+              </tr>
+              <tr>
+                <td>Total Semesters</td>
+                <td>{studentDetails.numberOfSemesters}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
+      </div>
   );
 };
 

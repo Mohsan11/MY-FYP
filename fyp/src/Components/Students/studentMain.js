@@ -12,7 +12,7 @@ const StudentMain = () => {
   const location = useLocation();
   const [showDashboard, setShowDashboard] = useState(true); 
   const [showManageStaff, setShowManageStaff] = useState(false);
-  const [showSOSCourses, setShowSOSCourses] = useState(false)
+  const [showSOSCourses, setShowSOSCourses] = useState(false);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -31,14 +31,14 @@ const StudentMain = () => {
   };
 
   const [student, setStudent] = useState(null);
-  const {id, student_name, roll_number ,email, program_id, session_id} = location.state || {};
+  const { id: studentId, student_name, roll_number, email, program_id, session_id } = location.state || {};
+
   const handleLogout = () => {
-    // Perform logout actions if needed
     navigate('/'); // Navigate to '/' on logout
   };
+
   return (
     <div>
-      {/* <p>Welcome, {name} (ID: {id}, Role: {role})!</p> */}
       <div className="mainPanel">
         <div className="panel-1">
           <img src={Logo} alt="must_logo"></img>
@@ -60,7 +60,6 @@ const StudentMain = () => {
               <p className="tags" onClick={() => handlePageChange("summary")}>
                 Summary
               </p>
-              
             </div>
           )}
           <div onClick={toggleResult} className="expandCollapse">
@@ -71,38 +70,35 @@ const StudentMain = () => {
               <p className="tags" onClick={() => handlePageChange("result")}>
                 Result
               </p>
-             
             </div>
           )}
-          
         </div>
         <div className="panel-2">
-        <div className="profile-container ">
-  <div className="pf-img">
-    <img className="pf-img" src={profile} alt="profile-logo" />
-  </div>
-  <div className="pf-titles">
-    <div className="pf-title">
-      <span> {student_name}</span>
-      <div className="line"></div>
-    </div>
-    <div className="pf-title">
-      <span> {email}</span>
-      <div className="line"></div>
-    </div>
-    <div className="pf-title">
-      <span> {roll_number}</span>
-      <div className="line"></div>
-    </div>
-    
-  </div>
-  <div className="logout-container">
-            <p className="logout-button" onClick={handleLogout}> <span className="bullet">&#8226;</span> Logout</p>
+          <div className="profile-container">
+            <div className="pf-img">
+              <img className="pf-img" src={profile} alt="profile-logo" />
+            </div>
+            <div className="pf-titles">
+              <div className="pf-title">
+                <span>{student_name}</span>
+                <div className="line"></div>
+              </div>
+              <div className="pf-title">
+                <span>{email}</span>
+                <div className="line"></div>
+              </div>
+              <div className="pf-title">
+                <span>{roll_number}</span>
+                <div className="line"></div>
+              </div>
+            </div>
+            <div className="logout-container">
+              <p className="logout-button" onClick={handleLogout}><span className="bullet">&#8226;</span> Logout</p>
+            </div>
           </div>
-</div>
-          {currentPage === "dashboard" && <Dashboard />}
-          {currentPage === "summary" && <Summary />}
-          {currentPage === "result" && <Result />}
+          {currentPage === "dashboard" && <Dashboard studentId={studentId} />}
+          {currentPage === "summary" && <Summary studentId={studentId} />}
+          {currentPage === "result" && <Result studentId={studentId}/>}
         </div>
       </div>
     </div>
