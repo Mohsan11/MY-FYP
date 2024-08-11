@@ -25,3 +25,12 @@ body {
     background-color: #bd2130; /* Even darker red color when button is pressed */
     transform: scale(1); /* Return to normal size when button is pressed */
 }
+.pointer{
+    cursor: pointer;
+  }
+  .question-text{
+    width: 80%;
+  }
+  .marks-text{
+    width: auto;
+  }

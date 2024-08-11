@@ -24,4 +24,6 @@
   .dashboardPage p {
     margin: 5px 0;
   }
-  
+  .pointer{
+    cursor: pointer;
+  }

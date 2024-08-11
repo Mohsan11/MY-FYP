@@ -4,7 +4,7 @@ import Logo from '../Resources/Must Logo.jpg'
 import profile from '../Resources/profileavatar.png'
 import Dashboard from "./Dashboard/dashboard";
 import Summary from './Pages/Summary'
-import Result from './Pages/result'
+import StudentResults from './Pages/studentResults'
 
 const StudentMain = () => {
   const navigate = useNavigate();
@@ -98,7 +98,7 @@ const StudentMain = () => {
           </div>
           {currentPage === "dashboard" && <Dashboard studentId={studentId} />}
           {currentPage === "summary" && <Summary studentId={studentId} />}
-          {currentPage === "result" && <Result studentId={studentId}/>}
+          {currentPage === "result" && <StudentResults studentId={studentId}/>}
         </div>
       </div>
     </div>

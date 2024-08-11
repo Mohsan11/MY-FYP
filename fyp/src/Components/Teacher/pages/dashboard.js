@@ -32,7 +32,7 @@ const Dashboard = ({ teacherId, onCourseClick }) => {
         <tbody>
           {courses.map((course) => (
             <tr key={course.id} onClick={() => onCourseClick(course)}>
-              <td>{course.course_name}</td>
+              <td className='pointer'>{course.course_name}</td>
               <td>{course.program_name}</td>
               <td>{course.session}</td>
               <td>{course.semester_name}</td>

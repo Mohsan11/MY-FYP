@@ -5,7 +5,7 @@ import Dashboard from '../pages/dashboard.js';
 import AddAssessment from '../pages/addAssessment.js';
 import AddMarks from '../pages/addMarks.js';
 import Results from '../pages/Results.js';
-import ViewAssessments from "../pages/ViewAssesments.js";
+import ManageAssessments from "../pages/manageAssessments.js";
 import ViewStudents from "../pages/viewStudents.js";
 import Logo from '../../Resources/Must Logo.jpg';
 import profile from '../../Resources/profileavatar.png'; // Adjust path if necessary
@@ -58,9 +58,9 @@ const TeacherMain = () => {
       case "results":
         return <Results  course={selectedCourse} teacherId={id}/>;
       case "viewAssessments":
-        return <ViewAssessments courseId={selectedCourse?.id} />;
+        return <ManageAssessments teacherId={id} onCourseClick={handleCourseClick}  course={selectedCourse}  />;
       case "viewStudents":
-        return <ViewStudents courseId={selectedCourse?.id} />;
+        return <ViewStudents courseId={selectedCourse?.id}  teacherId={id} assessmentId={null} />;
       default:
         return <Dashboard teacherId={id} onCourseClick={handleCourseClick} />;
     }
