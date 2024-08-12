@@ -5,27 +5,40 @@ import './addsemester.css';
 const AddSemester = () => {
   const [semesterName, setSemesterName] = useState('');
   const [semesterNumber, setSemesterNumber] = useState('');
-  // const [semesterTerm, setSemesterTerm] = useState('');
   const [sessions, setSessions] = useState([]);
   const [selectedSession, setSelectedSession] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
   const [responseType, setResponseType] = useState(''); // 'success' or 'error'
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/session/all').then(response => {
-      setSessions(response.data);
-    }).catch(error => {
-      console.error("Error fetching sessions:", error);
-    });
+    const fetchSessionsAndPrograms = async () => {
+      try {
+        const sessionsResponse = await axios.get('http://localhost:4000/api/session/all');
+        const programsResponse = await axios.get('http://localhost:4000/api/programs/all');
+        
+        const sessionsWithProgramNames = sessionsResponse.data.map(session => {
+          const program = programsResponse.data.find(prog => prog.id === session.program_id);
+          return {
+            ...session,
+            programName: program ? program.name : 'Unknown Program',
+          };
+        });
+
+        setSessions(sessionsWithProgramNames);
+      } catch (error) {
+        console.error("Error fetching sessions and programs:", error);
+      }
+    };
+
+    fetchSessionsAndPrograms();
   }, []);
 
   const handleSave = async () => {
     try {
-      const semesterResponse = await axios.post('http://localhost:4000/api/semester', {
+      await axios.post('http://localhost:4000/api/semester', {
         name: semesterName,
         number: semesterNumber,
-        // term: semesterTerm,
-        session_id: selectedSession
+        session_id: selectedSession,
       });
 
       setResponseMessage("Semester added successfully!");
@@ -34,11 +47,10 @@ const AddSemester = () => {
       // Clear input fields on successful save
       setSemesterName('');
       setSemesterNumber('');
-      // setSemesterTerm('');
       setSelectedSession('');
-        setTimeout(() => {
+      setTimeout(() => {
         setResponseMessage("");
-      setResponseType('');
+        setResponseType('');
       }, 5000);
     } catch (error) {
       console.error("Error saving semester:", error);
@@ -46,7 +58,7 @@ const AddSemester = () => {
       setResponseType('error');
       setTimeout(() => {
         setResponseMessage("");
-      setResponseType('');
+        setResponseType('');
       }, 5000);
     }
   };
@@ -55,7 +67,6 @@ const AddSemester = () => {
     // Clear input fields on cancel
     setSemesterName('');
     setSemesterNumber('');
-    // setSemesterTerm('');
     setSelectedSession('');
     setResponseMessage('');
     setResponseType('');
@@ -72,16 +83,14 @@ const AddSemester = () => {
         <label>Number:</label>
         <input className="input" type="number" placeholder='1' value={semesterNumber} onChange={(e) => setSemesterNumber(e.target.value)} />
       </div>
-      {/* <div className='lp'>
-        <label>Term:</label>
-        <input className="input" type="text"  value={semesterTerm} onChange={(e) => setSemesterTerm(e.target.value)} />
-      </div> */}
       <div className='lp'>
         <label>Select Session:</label>
         <select value={selectedSession} onChange={(e) => setSelectedSession(e.target.value)}>
           <option value="" disabled>Select Session</option>
           {sessions.map(session => (
-            <option key={session.id} value={session.id}>{session.start_year} - {session.end_year}</option>
+            <option key={session.id} value={session.id}>
+              {session.programName} ({session.start_year} - {session.end_year})
+            </option>
           ))}
         </select>
       </div>

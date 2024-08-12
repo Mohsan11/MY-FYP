@@ -24,13 +24,14 @@ import ViewSOS from "./Pages/SOS-Courses/ViewSOS.js";
 import profile from '../Resources/profileavatar.png'
 import AssignTeacher from "./Pages/SOS-Courses/Assign_Teacher.js";
 import AssignStudent from "./Pages/SOS-Courses/assignStudent.js";
-
+import GenerateResuts from "./Pages/Results/gernerateresults.js";
 const Main = () => {
   const navigate = useNavigate(); 
   const [currentPage, setCurrentPage] = useState("dashboard");
   const location = useLocation();
   const [showDashboard, setShowDashboard] = useState(true); 
   const [showManageStaff, setShowManageStaff] = useState(false);
+  const [showResults, setShowResults] = useState(false);
   const [showSOSCourses, setShowSOSCourses] = useState(false); 
 
   const handlePageChange = (page) => {
@@ -43,6 +44,9 @@ const Main = () => {
 
   const toggleManageStaff = () => {
     setShowManageStaff(!showManageStaff);
+  };
+  const toggleResults = () => {
+    setShowResults(!showResults);
   };
 
   const toggleSOSCourses = () => {
@@ -146,6 +150,16 @@ const Main = () => {
               </p>
             </div>
           )}
+          <div onClick={toggleResults} className="expandCollapse">
+            {showResults ? "▼" : "▲"} Results
+          </div>
+          {showResults && (
+            <div className="optionsList">
+              <p className="tags" onClick={() => handlePageChange("generateResults")}>
+                Generate Results
+              </p>
+            </div>
+          )}
           
         </div>
         <div className="panel-2">
@@ -192,6 +206,7 @@ const Main = () => {
           {currentPage === "addStudent" && <AddStudent />}
           {currentPage === "updateStudent" && <UpdateStudent />}
           {currentPage === "managestudents" && <StudentTable />}
+          {currentPage === "generateResults" && <GenerateResuts />}
         </div>
       </div>
     </div>
