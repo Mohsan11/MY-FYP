@@ -15,6 +15,10 @@ const AddCLO = () => {
   const [responseMessage, setResponseMessage] = useState('');
   const [responseType, setResponseType] = useState(''); // 'success' or 'error'
 
+  // New state variables for search
+  const [searchCourseName, setSearchCourseName] = useState('');
+  const [searchSession, setSearchSession] = useState('');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -123,7 +127,6 @@ const AddCLO = () => {
   };
 
   const handleCancel = () => {
-    // Clear input fields on cancel
     setDescription('');
     setCourseId('');
     setSessionId('');
@@ -133,6 +136,17 @@ const AddCLO = () => {
     setResponseMessage('');
     setResponseType('');
   };
+
+  // Filter CLOs by course name and session based on search inputs
+  const filteredClos = clos.filter(clo => {
+    const course = courses.find(course => course.id === clo.course_id);
+    const session = sessions.find(session => session.id === clo.session_id);
+
+    const courseMatch = course ? course.name.toLowerCase().includes(searchCourseName.toLowerCase()) : false;
+    const sessionMatch = session ? `${session.start_year} - ${session.end_year}`.includes(searchSession) : false;
+
+    return courseMatch && sessionMatch;
+  });
 
   const columns = [
     {
@@ -169,13 +183,14 @@ const AddCLO = () => {
   return (
     <div className='CLOContainer'>
       <h2 className="heading">Add CLO</h2>
+      {/* CLO input form */}
       <div className='lp'>
         <label>CLO Name:</label>
-        <input className="input" type="text" value={cloName} onChange={(e) => setCloName(e.target.value)} />
+        <input className="input" placeholder='CLO-1' type="text" value={cloName} onChange={(e) => setCloName(e.target.value)} />
       </div>
       <div className='lp'>
         <label>Description:</label>
-        <input className="input" type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
+        <input className="input" placeholder='Understand basic' type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
       </div>
       <div className='lp'>
         <label>Select Course:</label>
@@ -195,7 +210,6 @@ const AddCLO = () => {
           ))}
         </select>
       </div>
-      
       <div className='rp button-group'>
         <button className='button save-button' onClick={handleSave}>{editMode ? 'Update' : 'Save'}</button>
         <button className='button cancel-button' onClick={handleCancel}>Cancel</button>
@@ -203,10 +217,26 @@ const AddCLO = () => {
       <div>
         <p className={`message ${responseType}`}>{responseMessage}</p>
       </div>
+      {/* Search inputs */}
+      <div className="lp">
+        <input
+          type="text"
+          placeholder="Enter course name"
+          value={searchCourseName}
+          onChange={(e) => setSearchCourseName(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Enter session (e.g., 2020 - 2021)"
+          value={searchSession}
+          onChange={(e) => setSearchSession(e.target.value)}
+        />
+      </div>
+
       <h3 className="heading">Manage CLOs</h3>
       <DataTable
         columns={columns}
-        data={clos}
+        data={filteredClos}  // Use filtered data
         pagination
       />
     </div>

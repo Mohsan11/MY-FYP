@@ -1,78 +1,120 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const StudentResults = ({ studentId, semesterId }) => {
-  const [results, setResults] = useState([]);
-  const [totalCredits, setTotalCredits] = useState(0);
-  const [cgpa, setCgpa] = useState(0);
+const StudentResults = ({ studentId, programId, sessionId }) => {
+  const [semesterResults, setSemesterResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/api/results/${studentId}/semester/${semesterId}`);
-        const finalResults = response.data;
+        // Fetch semester results
+        const resultsResponse = await axios.get(`http://localhost:4000/api/add_final_results/${studentId}/${programId}/${sessionId}`);
+        const resultsData = resultsResponse.data;
 
-        let totalCredits = 0;
-        let totalGP = 0;
+        // Fetch course names and semester details
+        const courseRequests = Object.values(resultsData).flatMap(semester => 
+          semester.results.map(result => 
+            axios.get(`http://localhost:4000/api/courses/${result.course_id}`)
+          )
+        );
 
-        const calculatedResults = finalResults.map(result => {
-          const { course_id, credit_hours, obtained_marks, gpa } = result;
-          
-          totalCredits += credit_hours;
-          totalGP += gpa * credit_hours;
+        const semesterRequests = Object.keys(resultsData).map(semesterId => 
+          axios.get(`http://localhost:4000/api/semester/${semesterId}`)
+        );
 
-          return {
-            courseId: course_id,
-            creditHours: credit_hours,
-            marks: obtained_marks,
-            gp: gpa,
-            cp: gpa * credit_hours,
-          };
-        });
+        // Await all course and semester requests
+        const [courseResponses, semesterResponses] = await Promise.all([
+          Promise.all(courseRequests),
+          Promise.all(semesterRequests)
+        ]);
 
-        setTotalCredits(totalCredits);
-        setCgpa((totalGP / totalCredits).toFixed(2));
-        setResults(calculatedResults);
+        const courses = courseResponses.reduce((acc, response) => {
+          acc[response.data.id] = response.data.name;
+          return acc;
+        }, {});
+
+        const semesters = semesterResponses.reduce((acc, response) => {
+          acc[response.data.id] = response.data.name;
+          return acc;
+        }, {});
+
+        // Map results to include course names and semester names
+        const resultsWithCoursesAndSemesters = Object.entries(resultsData).map(([semesterId, { results, totalCredits, cgpa, status }]) => ({
+          semesterId,
+          semesterName: semesters[semesterId],
+          results: results.map(result => ({
+            ...result,
+            course_name: courses[result.course_id]
+          })),
+          totalCredits,
+          cgpa,
+          status
+        }));
+
+        setSemesterResults(resultsWithCoursesAndSemesters);
       } catch (error) {
         console.error('Error fetching student results:', error);
+        setError('Failed to load results');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchResults();
-  }, [studentId, semesterId]);
+  }, [studentId, programId, sessionId]);
+
+  if (loading) {
+    return <p>Loading results...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <div className="results-container">
-      <h3>Results Semester: {semesterId}</h3>
-      <table className="results-table">
-        <thead>
-          <tr>
-            <th>Course ID</th>
-            <th>Credit Hours</th>
-            <th>Marks</th>
-            <th>GP</th>
-            <th>CP</th>
-          </tr>
-        </thead>
-        <tbody>
-          {results.map((result, index) => (
-            <tr key={index}>
-              <td>{result.courseId}</td>
-              <td>{result.creditHours}</td>
-              <td>{result.marks}</td>
-              <td>{result.gp.toFixed(2)}</td>
-              <td>{result.cp.toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colSpan="3">CGPA: {cgpa}</td>
-            <td colSpan="2">Total Credits: {totalCredits}</td>
-          </tr>
-        </tfoot>
-      </table>
-      <p>Scholastic Status: Promoted/Not Promoted</p>
+      {semesterResults.length > 0 ? (
+        semesterResults.map(({ semesterId, semesterName, results, totalCredits, cgpa, status }) => (
+          <div key={semesterId} className="semester-results">
+            <h3>Results for Semester: {semesterName}</h3>
+            <table className="results-table">
+              <thead>
+                <tr>
+                  <th>Course Name</th>
+                  <th>Total Marks</th>
+                  <th>Obtained Marks</th>
+                  <th>Grade</th>
+                  <th>GPA</th>
+                  <th>Credit Hours</th>
+                </tr>
+              </thead>
+              <tbody>
+                {results.map(result => (
+                  <tr key={result.id}>
+                    <td>{result.course_name}</td>
+                    <td>{result.total_marks}</td>
+                    <td>{result.obtained_marks}</td>
+                    <td>{result.grade}</td>
+                    <td>{parseFloat(result.gpa).toFixed(2)}</td>
+                    <td>{result.credit_hours}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan="5">CGPA: {cgpa}</td>
+                  <td>Total Credits: {totalCredits}</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>Scholastic Status: {status}</p>
+          </div>
+        ))
+      ) : (
+        <p>No results available.</p>
+      )}
     </div>
   );
 };

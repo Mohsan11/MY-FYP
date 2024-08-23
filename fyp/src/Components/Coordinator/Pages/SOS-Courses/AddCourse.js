@@ -20,6 +20,13 @@ const AddCourse = () => {
   const [editMode, setEditMode] = useState(false);
   const [editCourseId, setEditCourseId] = useState(null);
 
+  // New state variables for search
+  const [searchCourseName, setSearchCourseName] = useState('');
+  const [searchCourseCode, setSearchCourseCode] = useState('');
+  const [searchProgramName, setSearchProgramName] = useState('');
+  const [searchSemester, setSearchSemester] = useState('');
+  const [searchSession, setSearchSession] = useState('');
+
   useEffect(() => {
     const fetchPrograms = async () => {
       try {
@@ -95,10 +102,10 @@ const AddCourse = () => {
         await axios.put(`http://localhost:4000/api/courses/${editCourseId}`, {
           name: courseName,
           code: courseCode,
-          program_id: selectedProgram,
-          semester_id: selectedSemester,
-          theory_credit: theoryCredit,
-          lab_credit: labCredit,
+          program_id: parseInt(selectedProgram),
+          semester_id: parseFloat(selectedSemester),
+          theory_credit_hours: theoryCredit,
+          lab_credit_hours: labCredit,
         });
         setResponseMessage("Course updated successfully!");
       } else {
@@ -107,8 +114,8 @@ const AddCourse = () => {
           code: courseCode,
           program_id: selectedProgram,
           semester_id: selectedSemester,
-          theory_credit: theoryCredit,
-          lab_credit: labCredit,
+          theory_credit_hours: theoryCredit,
+          lab_credit_hours: labCredit,
         });
         setResponseMessage("Course added successfully!");
       }
@@ -184,11 +191,19 @@ const AddCourse = () => {
     setSelectedProgram(course.program_id);
     setSelectedSession(course.session_id);
     setSelectedSemester(course.semester_id);
-    setTheoryCredit(course.theory_credit);
-    setLabCredit(course.lab_credit);
+    setTheoryCredit(course.theory_credit_hours);
+    setLabCredit(course.lab_credit_hours);
     setEditCourseId(course.id);
     setEditMode(true);
   };
+
+  const filteredCourses = courses.filter(course => 
+    (searchCourseName === '' || course.course_name.toLowerCase().includes(searchCourseName.toLowerCase())) &&
+    (searchCourseCode === '' || course.course_code.toLowerCase().includes(searchCourseCode.toLowerCase())) &&
+    (searchProgramName === '' || course.program_name.toLowerCase().includes(searchProgramName.toLowerCase())) &&
+    (searchSemester === '' || course.semester_name.toLowerCase().includes(searchSemester.toLowerCase())) &&
+    (searchSession === '' || course.session.toLowerCase().includes(searchSession.toLowerCase()))
+  );
 
   const columns = [
     {
@@ -218,19 +233,19 @@ const AddCourse = () => {
     },
     {
       name: 'Theory Credit',
-      selector: row => row.theory_credit,
+      selector: row => row.theory_credit_hours,
       sortable: true,
     },
     {
       name: 'Lab Credit',
-      selector: row => row.lab_credit,
+      selector: row => row.lab_credit_hours,
       sortable: true,
     },
     {
       name: 'Actions',
       cell: row => (
         <>
-          <button onClick={() => handleEdit(row)}>Edit</button>
+          <button  onClick={() => handleEdit(row)}>Edit</button>
           <button onClick={() => handleDelete(row.id)}>Delete</button>
         </>
       ),
@@ -255,36 +270,52 @@ const AddCourse = () => {
         <input
           className="input"
           type="text"
-          placeholder='BCS-1203'
+          placeholder='BCS-1101'
           value={courseCode}
           onChange={(e) => setCourseCode(e.target.value)}
         />
       </div>
       <div className='lp'>
-        <label>Select Program:</label>
-        <select value={selectedProgram} onChange={(e) => setSelectedProgram(e.target.value)}>
-          <option value="" disabled>Select Program</option>
+        <label>Program:</label>
+        <select
+          className="select"
+          value={selectedProgram}
+          onChange={(e) => setSelectedProgram(e.target.value)}
+        >
+          <option value="">Select Program</option>
           {programs.map(program => (
-            <option key={program.id} value={program.id}>{program.name}</option>
+            <option key={program.id} value={program.id}>
+              {program.name}
+            </option>
           ))}
         </select>
       </div>
       <div className='lp'>
-        <label>Select Session:</label>
-        <select value={selectedSession} onChange={(e) => setSelectedSession(e.target.value)}>
-          <option value="" disabled>Select Session</option>
+        <label>Session:</label>
+        <select
+          className="select"
+          value={selectedSession}
+          onChange={(e) => setSelectedSession(e.target.value)}
+        >
+          <option value="">Select Session</option>
           {sessions.map(session => (
-            <option key={session.id} value={session.id}>{session.start_year} - {session.end_year}</option>
+            <option key={session.id} value={session.id}>
+              {session.start_year} - {session.end_year}
+            </option>
           ))}
         </select>
       </div>
       <div className='lp'>
-        <label>Select Semester:</label>
-        <select value={selectedSemester} onChange={(e) => setSelectedSemester(e.target.value)}>
-          <option value="" disabled>Select Semester</option>
+        <label>Semester:</label>
+        <select
+          className="select"
+          value={selectedSemester}
+          onChange={(e) => setSelectedSemester(e.target.value)}
+        >
+          <option value="">Select Semester</option>
           {semesters.map(semester => (
             <option key={semester.id} value={semester.id}>
-              {semester.name} - {semester.number}
+              {semester.name}
             </option>
           ))}
         </select>
@@ -292,36 +323,72 @@ const AddCourse = () => {
       <div className='lp'>
         <label>Theory Credit Hours:</label>
         <input
+          className="input"
           type="number"
           value={theoryCredit}
-          min="1"
-          max="3"
-          onChange={(e) => setTheoryCredit(Number(e.target.value))}
+          onChange={(e) => setTheoryCredit(parseFloat(e.target.value))}
         />
       </div>
       <div className='lp'>
         <label>Lab Credit Hours:</label>
         <input
+          className="input"
           type="number"
           value={labCredit}
-          min="0"
-          max="2"
-          onChange={(e) => setLabCredit(Number(e.target.value))}
+          onChange={(e) => setLabCredit(parseFloat(e.target.value))}
         />
       </div>
-      <div className='rp button-group'>
-        <button className='button save-button' onClick={handleSave}>{editMode ? 'Update' : 'Save'}</button>
-        <button className='button cancel-button' onClick={handleCancel}>Cancel</button>
+      <div className='lp'>
+        <div className='rp button-group'>
+        <button className="save-button button" onClick={handleSave}>
+          {editMode ? 'Update Course' : 'Add Course'}
+        </button>
+        <button className="cancel-button button" onClick={handleCancel}>Cancel</button>
+        </div>
       </div>
-      <div>
-        <p className={`message ${responseType}`}>{responseMessage}</p>
+      {responseMessage && (
+        <p className={`response-message ${responseType}`}>
+          {responseMessage}
+        </p>
+      )}
+      <div className="search">
+        <input
+          type="text"
+          placeholder="Search Course Name"
+          value={searchCourseName}
+          onChange={(e) => setSearchCourseName(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Search Course Code"
+          value={searchCourseCode}
+          onChange={(e) => setSearchCourseCode(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Search Program Name"
+          value={searchProgramName}
+          onChange={(e) => setSearchProgramName(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Search Semester"
+          value={searchSemester}
+          onChange={(e) => setSearchSemester(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Search Session"
+          value={searchSession}
+          onChange={(e) => setSearchSession(e.target.value)}
+        />
       </div>
-      <h3>Courses</h3>
       <DataTable
         columns={columns}
-        data={courses}
+        data={filteredCourses}
         pagination
         highlightOnHover
+        striped
       />
     </div>
   );

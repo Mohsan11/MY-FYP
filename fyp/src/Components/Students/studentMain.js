@@ -98,7 +98,7 @@ const StudentMain = () => {
           </div>
           {currentPage === "dashboard" && <Dashboard studentId={studentId} />}
           {currentPage === "summary" && <Summary studentId={studentId} />}
-          {currentPage === "result" && <StudentResults studentId={studentId}/>}
+          {currentPage === "result" && <StudentResults studentId={studentId} programId={program_id} sessionId={session_id} />}
         </div>
       </div>
     </div>

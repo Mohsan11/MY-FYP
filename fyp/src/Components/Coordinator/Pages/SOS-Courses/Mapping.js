@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import DataTable from 'react-data-table-component';
 import './mapping.css';
 
 const Mapping = () => {
@@ -16,6 +17,8 @@ const Mapping = () => {
   const [selectedCourse, setSelectedCourse] = useState('');
   const [selectedSession, setSelectedSession] = useState('');
   const [selectedProgram, setSelectedProgram] = useState('');
+
+  const [filterText, setFilterText] = useState('');
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -121,9 +124,70 @@ const Mapping = () => {
     selectedProgram ? plo.program_id === parseInt(selectedProgram) : true
   );
 
+  const columns = [
+    {
+      name: 'CLO',
+      selector: row => row.clo_name,
+      sortable: true,
+    },
+    {
+      name: 'Description',
+      selector: row => row.description,
+    },
+    {
+      name: 'Course',
+      selector: row => row.course_name,
+      sortable: true,
+    },
+    {
+      name: 'Session',
+      selector: row => row.session_name,
+      sortable: true,
+    },
+    {
+      name: 'PLO',
+      selector: row => row.plo_name,
+      sortable: true,
+    },
+    {
+      name: 'Program',
+      selector: row => row.program_name,
+      sortable: true,
+    },
+    {
+      name: 'Actions',
+      cell: row => (
+        <button onClick={() => handleDelete(row.clo_id, row.plo_id)}>Delete</button>
+      ),
+    },
+  ];
+
+  // Extended filter logic to search by CLO, PLO, Program, or Course name
+  const filteredData = mappings.map(mapping => {
+    const clo = clos.find(clo => clo.id === mapping.clo_id);
+    const plo = plos.find(plo => plo.id === mapping.plo_id);
+    return {
+      clo_name: clo ? clo.clo_name : 'Unknown CLO',
+      description: clo ? clo.description : 'No description',
+      course_name: clo ? clo.course_name : 'Unknown Course',
+      session_name: clo ? clo.session_name : 'Unknown Session',
+      plo_name: plo ? plo.plo_name : 'Unknown PLO',
+      program_name: plo ? plo.program_name : 'Unknown Program',
+      clo_id: mapping.clo_id,
+      plo_id: mapping.plo_id
+    };
+  }).filter(item =>
+    item.clo_name.toLowerCase().includes(filterText.toLowerCase()) ||
+    item.plo_name.toLowerCase().includes(filterText.toLowerCase()) ||
+    item.program_name.toLowerCase().includes(filterText.toLowerCase()) || // Search by program name
+    item.course_name.toLowerCase().includes(filterText.toLowerCase())    // Search by course name
+  );
+
   return (
     <div className='MappingContainer'>
       <h2 className="heading">CLO-PLO Mapping</h2>
+
+      {/* Filter Controls */}
       <div className='lp'>
         <label>Select Program:</label>
         <select value={selectedProgram} onChange={(e) => setSelectedProgram(e.target.value)}>
@@ -154,6 +218,7 @@ const Mapping = () => {
         </select>
       </div>
       
+      {/* Mapping Selection */}
       <div className='lp'>
         <label>Select CLO:</label>
         <select value={cloId} onChange={(e) => setCloId(e.target.value)}>
@@ -165,55 +230,46 @@ const Mapping = () => {
           ))}
         </select>
       </div>
+
       <div className='lp'>
         <label>Select PLO:</label>
         <select value={ploId} onChange={(e) => setPloId(e.target.value)}>
           <option value="" disabled>Select PLO</option>
           {filteredPlos.map(plo => (
-            <option key={plo.id} value={plo.id}>{plo.plo_name} (Program: {plo.program_name})(description: {plo.description})</option>
+            <option key={plo.id} value={plo.id}>{plo.plo_name} ({plo.program_name})</option>
           ))}
         </select>
       </div>
-      <div className='rp button-group'>
+
+      <div className='button-group rp'>
         <button className='button save-button' onClick={handleSave}>Save</button>
-        <button className='button cancel-button' onClick={() => { setCloId(''); setPloId(''); }}>Cancel</button>
       </div>
-      <div>
-        <p className={`message ${responseType}`}>{responseMessage}</p>
+
+      {/* Success/Error Message */}
+      {responseMessage && (
+        <div className={`response-message ${responseType}`}>
+          {responseMessage}
+        </div>
+      )}
+
+      {/* Search Box */}
+      <div className="search-box">
+        <input
+          type="text"
+          placeholder="Search by CLO, PLO, Program or Course"
+          value={filterText}
+          onChange={(e) => setFilterText(e.target.value)}
+        />
       </div>
-      <h3>Current Mappings</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>CLO</th>
-            <th>Description</th>
-            <th>Course</th>
-            <th>Session</th>
-            <th>PLO</th>
-            <th>Program</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {mappings.map(mapping => {
-            const clo = clos.find(clo => clo.id === mapping.clo_id);
-            const plo = plos.find(plo => plo.id === mapping.plo_id);
-            return (
-              <tr key={`${mapping.clo_id}-${mapping.plo_id}`}>
-                <td>{clo ? clo.clo_name : 'Unknown CLO'}</td>
-                <td>{clo ? clo.description : 'No description'}</td>
-                <td>{clo ? clo.course_name : 'Unknown Course'}</td>
-                <td>{clo ? clo.session_name : 'Unknown Session'}</td>
-                <td>{plo ? plo.plo_name : 'Unknown PLO'}</td>
-                <td>{plo ? plo.program_name : 'Unknown Program'}</td>
-                <td>
-                  <button onClick={() => handleDelete(mapping.clo_id, mapping.plo_id)}>Delete</button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+
+      {/* Data Table */}
+      <DataTable
+        columns={columns}
+        data={filteredData}
+        pagination
+        highlightOnHover
+        pointerOnHover
+      />
     </div>
   );
 };

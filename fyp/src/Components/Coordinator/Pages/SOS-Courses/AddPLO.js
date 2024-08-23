@@ -16,6 +16,10 @@ const AddPLO = () => {
   const [responseMessage, setResponseMessage] = useState('');
   const [responseType, setResponseType] = useState(''); // 'success' or 'error'
 
+  // State variables for search
+  const [searchProgram, setSearchProgram] = useState('');
+  const [searchSession, setSearchSession] = useState('');
+
   useEffect(() => {
     const fetchProgramsAndSessions = async () => {
       try {
@@ -53,23 +57,31 @@ const AddPLO = () => {
           session_id: selectedSession,
           plo_name: ploName
         });
-
+  
         setResponseMessage("PLO added successfully!");
         setResponseType('success');
         fetchPlos();
         handleCancel();
       } catch (error) {
         console.error("Error saving PLO:", error);
-        setResponseMessage("Failed to add PLO. Please try again.");
-        setResponseType('error');
+  
+        // Check if the error message is about a duplicate PLO
+        if (error.response && error.response.data.error === 'PLO with the same name already exists for this program and session.') {
+          setResponseMessage("PLO with the same name already exists for the selected program and session.");
+          setResponseType('error');
+        } else {
+          setResponseMessage("Failed to add PLO. Please try again.");
+          setResponseType('error');
+        }
       } finally {
         setTimeout(() => {
           setResponseMessage("");
-          setResponseType('');
+          setResponseType('');  
         }, 4000);
       }
     }
   };
+  
 
   const handleUpdate = async () => {
     try {
@@ -166,16 +178,27 @@ const AddPLO = () => {
     },
   ];
 
+  // Filter PLOs based on search terms
+  const filteredPlos = plos.filter(plo => {
+    const programName = programs.find(program => program.id === plo.program_id)?.name.toLowerCase() || '';
+    const sessionName = `${sessions.find(session => session.id === plo.session_id)?.start_year} - ${sessions.find(session => session.id === plo.session_id)?.end_year}`.toLowerCase();
+
+    return (
+      (searchProgram === '' || programName.includes(searchProgram.toLowerCase())) &&
+      (searchSession === '' || sessionName.includes(searchSession.toLowerCase()))
+    );
+  });
+
   return (
     <div className='PLOContainer'>
       <h2 className="heading">Add PLO</h2>
       <div className='lp'>
         <label>PLO Name:</label>
-        <input className="input" type="text" value={ploName} onChange={(e) => setPloName(e.target.value)} />
+        <input className="input" type="text" value={ploName} placeholder='PLO- 1' onChange={(e) => setPloName(e.target.value)} />
       </div>
       <div className='lp'>
         <label>Description:</label>
-        <input className="input" type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
+        <input className="input" placeholder='Knowledge for Solving Computing Problems' type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
       </div>
       <div className='lp'>
         <label>Select Program:</label>
@@ -199,13 +222,28 @@ const AddPLO = () => {
         <button className='button save-button' onClick={handleSave}>{editMode ? 'Update' : 'Save'}</button>
         <button className='button cancel-button' onClick={handleCancel}>Cancel</button>
       </div>
+      
       <div>
         <p className={`message ${responseType}`}>{responseMessage}</p>
       </div>
       <h3 className="heading">Manage PLOs</h3>
+      <div className='search'>
+        <input
+          type="text"
+          placeholder="Search By Program Name"
+          value={searchProgram}
+          onChange={(e) => setSearchProgram(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Search By Session"
+          value={searchSession}
+          onChange={(e) => setSearchSession(e.target.value)}
+        />
+      </div>
       <DataTable
         columns={columns}
-        data={plos}
+        data={filteredPlos}
         pagination
       />
     </div>

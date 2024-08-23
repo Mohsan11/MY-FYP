@@ -6,7 +6,7 @@ import AddAssessment from '../pages/addAssessment.js';
 import AddMarks from '../pages/addMarks.js';
 import Results from '../pages/Results.js';
 import ManageAssessments from "../pages/manageAssessments.js";
-import ViewStudents from "../pages/viewStudents.js";
+import ViewStatus from "../pages/viewStatus.js";
 import Logo from '../../Resources/Must Logo.jpg';
 import profile from '../../Resources/profileavatar.png'; // Adjust path if necessary
 
@@ -59,8 +59,8 @@ const TeacherMain = () => {
         return <Results  course={selectedCourse} teacherId={id}/>;
       case "viewAssessments":
         return <ManageAssessments teacherId={id} onCourseClick={handleCourseClick}  course={selectedCourse}  />;
-      case "viewStudents":
-        return <ViewStudents courseId={selectedCourse?.id}  teacherId={id} assessmentId={null} />;
+      case "viewStatus":
+        return <ViewStatus courseId={selectedCourse?.id}  teacherId={id} assessmentId={null} />;
       default:
         return <Dashboard teacherId={id} onCourseClick={handleCourseClick} />;
     }
@@ -95,8 +95,8 @@ const TeacherMain = () => {
               <p className="tags" onClick={() => handlePageChange("viewAssessments")}>
                 View Assessments
               </p>
-              <p className="tags" onClick={() => handlePageChange("viewStudents")}>
-                View Students
+              <p className="tags" onClick={() => handlePageChange("viewStatus")}>
+                View Status
               </p>
             </div>
           )}

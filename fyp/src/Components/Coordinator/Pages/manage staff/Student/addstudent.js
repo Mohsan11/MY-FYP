@@ -82,10 +82,12 @@ const AddStudent = () => {
         session_id: selectedSession,
         semester_id: selectedSemester
       });
+      setMessage("Student added successfully!");
+        setMessageType("success")
       setTimeout(() => {
-        setMessage("Student added successfully!");
-        setMessageType("success"); // Set message type to success
-      }, 5000);
+        setMessage("");
+        setMessageType(""); // Set message type to success
+      }, 3000);
       // Clear form fields
       setName("");
       setRollNumber("");
@@ -96,10 +98,12 @@ const AddStudent = () => {
       setSelectedSemester("");
     } catch (error) {
       console.error("Error adding student:", error);
+      setMessage("Failed to add student.");
+        setMessageType("error");
       setTimeout(() => {
-        setMessage("Failed to add student.");
-        setMessageType("error"); // Set message type to error
-      }, 5000);
+        setMessage("");
+        setMessageType(""); // Set message type to error
+      }, 3000);
     }
   };
 

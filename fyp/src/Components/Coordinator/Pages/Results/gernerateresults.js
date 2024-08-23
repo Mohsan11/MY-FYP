@@ -15,14 +15,12 @@ const GenerateResults = () => {
   const [responseMessage, setResponseMessage] = useState('');
   const [responseType, setResponseType] = useState('');
 
-  // Fetch all programs on component mount
   useEffect(() => {
     axios.get('http://localhost:4000/api/programs/all')
       .then(response => setPrograms(response.data))
       .catch(error => console.error('Error fetching programs:', error));
   }, []);
 
-  // Fetch sessions based on selected program
   useEffect(() => {
     if (selectedProgram) {
       axios.get(`http://localhost:4000/api/session/program/${selectedProgram}`)
@@ -31,7 +29,6 @@ const GenerateResults = () => {
     }
   }, [selectedProgram]);
 
-  // Fetch semesters based on selected session
   useEffect(() => {
     if (selectedSession) {
       axios.get(`http://localhost:4000/api/semester/session/${selectedSession}`)
@@ -40,7 +37,6 @@ const GenerateResults = () => {
     }
   }, [selectedSession]);
 
-  // Fetch courses based on selected semester and store them
   useEffect(() => {
     if (selectedSemester) {
       axios.get(`http://localhost:4000/api/courses/semester/${selectedSemester}`)
@@ -49,7 +45,6 @@ const GenerateResults = () => {
     }
   }, [selectedSemester]);
 
-  // Fetch students based on selected program and session
   useEffect(() => {
     if (selectedProgram && selectedSession) {
       axios.get(`http://localhost:4000/api/students/${selectedProgram}/${selectedSession}`)
@@ -58,14 +53,13 @@ const GenerateResults = () => {
     }
   }, [selectedProgram, selectedSession]);
 
-  // Check if the student is ready to generate results
   const handleCheckResults = () => {
     if (selectedStudent && selectedSemester) {
       axios.get(`http://localhost:4000/api/resultsDetails/final/${selectedStudent}/semester/${selectedSemester}`)
         .then(response => {
           const resultData = response.data;
           const allAssessmentsComplete = resultData.every(result => !result.message);
-
+  
           if (allAssessmentsComplete) {
             setResults(resultData);
             const studentName = students.find(student => student.id === parseInt(selectedStudent))?.student_name;
@@ -87,36 +81,35 @@ const GenerateResults = () => {
     }
   };
 
-  // Save the results
   const handleSaveResults = () => {
-    if (responseType === 'success') {
-      axios.post('http://localhost:4000/api/api/final_results_semesters/save', {
+    if (results.length) {
+      axios.post('http://localhost:4000/api/add_final_results/results/save', {
         student_id: selectedStudent,
         program_id: selectedProgram,
         session_id: selectedSession,
         semester_id: selectedSemester,
         results
       })
-        .then(() => {
-          setResponseMessage('Results successfully saved!');
-          setResponseType('success');
-        })
-        .catch(error => {
-          console.error('Error saving results:', error);
-          setResponseMessage('Error saving results.');
-          setResponseType('error');
-        });
+      .then(() => {
+        setResponseMessage('Results successfully saved!');
+        setResponseType('success');
+      })
+      .catch(error => {
+        console.error('Error saving results:', error);
+        setResponseMessage('Error saving results.');
+        setResponseType('error');
+      });
     } else {
-      setResponseMessage('Please check the results before saving.');
+      setResponseMessage('No results to save.');
       setResponseType('error');
     }
   };
 
   return (
-    <div>
+    <div className='lp'>
       <h2>Generate Results</h2>
       
-      <div>
+      <div className='lp'>
         <label>Program:</label>
         <select value={selectedProgram} onChange={e => setSelectedProgram(e.target.value)}>
           <option value="">Select Program</option>
@@ -126,7 +119,7 @@ const GenerateResults = () => {
         </select>
       </div>
       
-      <div>
+      <div className='lp'>
         <label>Session:</label>
         <select value={selectedSession} onChange={e => setSelectedSession(e.target.value)}>
           <option value="">Select Session</option>
@@ -136,7 +129,7 @@ const GenerateResults = () => {
         </select>
       </div>
       
-      <div>
+      <div className='lp'>
         <label>Semester:</label>
         <select value={selectedSemester} onChange={e => setSelectedSemester(e.target.value)}>
           <option value="">Select Semester</option>
@@ -146,7 +139,7 @@ const GenerateResults = () => {
         </select>
       </div>
       
-      <div>
+      <div className='lp'>
         <label>Student:</label>
         <select value={selectedStudent} onChange={e => setSelectedStudent(e.target.value)}>
           <option value="">Select Student</option>
@@ -164,6 +157,40 @@ const GenerateResults = () => {
       {responseMessage && (
         <div className={`message ${responseType}`}>
           <p>{responseMessage}</p>
+        </div>
+      )}
+
+      {results.length > 0 && (
+        <div className="results-table">
+          <h3>Results</h3>
+          {results.map(result => (
+            <div key={result.course_id}>
+              <h4>{result.course_name}</h4>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Assessment</th>
+                    <th>Total Marks</th>
+                    <th>Obtained Marks</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {result.assessments.map(assessment => (
+                    <tr key={assessment.id}>
+                      <td>{assessment.name}</td>
+                      <td>{assessment.total_marks}</td>
+                      <td>{assessment.obtained_marks}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p>Total Marks: {result.total_marks}</p>
+              <p>Obtained Marks: {result.obtained_marks}</p>
+              <p>Grade: {result.grade}</p>
+              <p>GPA: {result.gpa}</p>
+              <p>Credit Hours: {result.credit_hours}</p>
+            </div>
+          ))}
         </div>
       )}
     </div>

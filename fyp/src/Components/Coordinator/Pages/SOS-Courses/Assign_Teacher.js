@@ -136,32 +136,37 @@ const AssignTeacher = () => {
 
         const response = await axios.post('http://localhost:4000/api/teacherCourseAssignment', newAssignment);
 
-        // Fetch and update the new assignment with additional details
-        const [teacher, course, semester] = await axios.all([
-          axios.get(`http://localhost:4000/api/users/${response.data.teacher_id}`),
-          axios.get(`http://localhost:4000/api/courses/${response.data.course_id}`),
-          axios.get(`http://localhost:4000/api/semester/${response.data.semester_id}`)
-        ]);
+        if (response.data.error) {
+          setResponseMessage(response.data.error);
+          setResponseType('error');
+        } else {
+          // Fetch and update the new assignment with additional details
+          const [teacher, course, semester] = await axios.all([
+            axios.get(`http://localhost:4000/api/users/${response.data.teacher_id}`),
+            axios.get(`http://localhost:4000/api/courses/${response.data.course_id}`),
+            axios.get(`http://localhost:4000/api/semester/${response.data.semester_id}`)
+          ]);
 
-        const newAssignmentWithDetails = {
-          ...response.data,
-          teacherName: teacher.data.username,
-          courseName: course.data.name,
-          semesterName: semester.data.name,
-        };
+          const newAssignmentWithDetails = {
+            ...response.data,
+            teacherName: teacher.data.username,
+            courseName: course.data.name,
+            semesterName: semester.data.name,
+          };
 
-        // Add the new assignment to the list
-        setAssignments(prevAssignments => [...prevAssignments, newAssignmentWithDetails]);
+          // Add the new assignment to the list
+          setAssignments(prevAssignments => [...prevAssignments, newAssignmentWithDetails]);
 
-        setResponseMessage('Teacher is assigned to the course successfully!');
-        setResponseType('success');
+          setResponseMessage('Teacher is assigned to the course successfully!');
+          setResponseType('success');
 
-        // Clear selections
-        setSelectedTeacher('');
-        setSelectedCourse('');
-        setSelectedSemester('');
-        setSelectedSession('');
-        setSelectedProgram('');
+          // Clear selections
+          setSelectedTeacher('');
+          setSelectedCourse('');
+          setSelectedSemester('');
+          setSelectedSession('');
+          setSelectedProgram('');
+        }
       } catch (error) {
         console.error('Error saving assignment:', error);
         setResponseMessage('Failed to add assignment. Please try again.');
@@ -180,7 +185,7 @@ const AssignTeacher = () => {
         setResponseType('');
       }, 4000);
     }
-  };
+};
 
   const handleCancel = () => {
     setSelectedTeacher('');
