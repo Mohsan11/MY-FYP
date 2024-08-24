@@ -142,6 +142,7 @@ const AddStudent = () => {
           <input
             className='lp'
             type="email"
+            style={{width: 'calc(100% - 20px)'}}
             value={email}
             onChange={handleEmailChange}
             required

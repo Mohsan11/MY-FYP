@@ -97,7 +97,8 @@ const Staff = () => {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email">Email</label>
-            <input style={{width: '80%'}}
+            <input
+             style={{width: 'calc(100% - 20px)'}}
               type="email"
               id="email"
               name="email"

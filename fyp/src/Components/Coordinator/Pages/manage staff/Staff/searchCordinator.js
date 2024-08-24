@@ -74,7 +74,7 @@ const ManageCoordinator = () => {
     {
       name: 'Actions',
       cell: row => (
-        <div>
+        <div  className="action-buttons d-inline-flex">
           <Link to={`/update-coordinator/${row.id}`} className="btn btn-primary">
             Edit
           </Link>

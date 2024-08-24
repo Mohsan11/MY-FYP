@@ -224,7 +224,7 @@ const AddMarks = ({ teacherId }) => {
               <option value="">Select a course</option>
               {courses.map(course => (
                 <option key={course.id} value={course.id}>
-                  {course.course_name}
+                  {course.course_name.split(' ').slice(0, 3).join(' ')}
                 </option>
               ))}
             </select>

@@ -1,0 +1,47 @@
+/* ManageAssessments.css */
+
+/* Container for the responsive table */
+.table-container {
+    overflow-x: auto;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  /* Table styling */
+  .assessment-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px; /* Ensure the table does not shrink too much */
+  }
+  
+  .table-header {
+    background-color: #f4f4f4;
+  }
+  
+  .header-cell, .table-cell {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .pointer {
+    cursor: pointer;
+  }
+  
+  /* Responsive media queries */
+  @media (max-width: 768px) {
+    .assessment-table {
+      font-size: 14px; /* Adjust font size for smaller screens */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .assessment-table {
+      font-size: 12px; /* Further adjust font size for very small screens */
+    }
+  
+    .header-cell, .table-cell {
+      padding: 8px;
+    }
+  }
+  

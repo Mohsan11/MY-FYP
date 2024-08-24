@@ -1,3 +1,4 @@
+/* General styling */
 .view-sos-container {
   padding: 20px;
   font-family: Arial, sans-serif;
@@ -5,14 +6,6 @@
 
 h2 {
   margin-bottom: 20px;
-}
-
-.button-group {
-  margin-bottom: 20px;
-}
-
-.button-group .btn {
-  margin-right: 10px;
 }
 
 .data-table {
@@ -34,4 +27,65 @@ h2 {
 .error-message {
   color: red;
   margin-bottom: 20px;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+  .data-table th,
+  .data-table td {
+    padding: 6px;
+    font-size: 14px;
+  }
+
+  .data-table {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .view-sos-container {
+    padding: 10px;
+  }
+
+  h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 4px;
+    font-size: 12px;
+  }
+
+  .data-table th {
+    font-size: 14px;
+  }
+
+  .data-table {
+    font-size: 10px;
+  }
+
+  /* Make the table scrollable */
+  .data-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 400px) {
+  h2 {
+    font-size: 16px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 3px;
+    font-size: 10px;
+  }
+
+  .data-table th {
+    font-size: 12px;
+  }
 }

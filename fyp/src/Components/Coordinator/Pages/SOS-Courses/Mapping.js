@@ -213,7 +213,7 @@ const Mapping = () => {
         <select value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)}>
           <option value="">All Courses</option>
           {courses.map(course => (
-            <option key={course.id} value={course.id}>{course.name}</option>
+            <option key={course.id} value={course.id}>{course.name.split(' ').slice(0, 3).join(' ')}</option>
           ))}
         </select>
       </div>
@@ -225,7 +225,9 @@ const Mapping = () => {
           <option value="" disabled>Select CLO</option>
           {filteredClos.map(clo => (
             <option key={clo.id} value={clo.id}>
-              {clo.clo_name} (Course: {clo.course_name}, Session: {clo.session_name}) - {clo.description}
+              {clo.clo_name} - 
+              {/* (Course: {clo.course_name.split(' ').slice(0, 3).join(' ')}, Session: {clo.session_name}) -  */}
+              {clo.description.split(' ').slice(0, 3).join(' ')}
             </option>
           ))}
         </select>
@@ -236,7 +238,9 @@ const Mapping = () => {
         <select value={ploId} onChange={(e) => setPloId(e.target.value)}>
           <option value="" disabled>Select PLO</option>
           {filteredPlos.map(plo => (
-            <option key={plo.id} value={plo.id}>{plo.plo_name} ({plo.program_name})</option>
+            <option key={plo.id} value={plo.id}>{plo.plo_name} - {plo.description.split(' ').slice(0, 3).join(' ')}
+             {/* ({plo.program_name}) */}
+             </option>
           ))}
         </select>
       </div>

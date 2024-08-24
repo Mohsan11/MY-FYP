@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import DataTable from 'react-data-table-component';
 import './ViewStatus.css'; // Add custom styles here
 
 const ViewStatus = ({ teacherId }) => {
@@ -7,6 +8,7 @@ const ViewStatus = ({ teacherId }) => {
   const [cloStatus, setCloStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
+  const [courseName, setCourseName] = useState(''); // New state for course name
 
   // Fetch courses assigned to the teacher
   useEffect(() => {
@@ -22,17 +24,29 @@ const ViewStatus = ({ teacherId }) => {
     fetchCourses();
   }, [teacherId]);
 
+  // Fetch course name based on course ID
+  const fetchCourseName = async (courseId) => {
+    try {
+      const response = await axios.get(`http://localhost:4000/api/courses/${courseId}`);
+      return response.data.name;
+    } catch (error) {
+      console.error('Error fetching course name:', error);
+      return 'Unknown Course';
+    }
+  };
+
   // Fetch CLO status for the selected course
   const checkCLOs = async (courseId) => {
     setLoading(true);
     setSelectedCourseId(courseId);
     try {
       const response = await axios.get(`http://localhost:4000/api/assesmentsController/checkCLOs/${courseId}`);
+      const courseName = await fetchCourseName(courseId); // Fetch the course name
       if (response.data.missingCLOs) {
         const cloDetails = await fetchMissingCLOs(response.data.missingCLOs);
-        setCloStatus({ courseId, status: response.data.message, missingCLOs: cloDetails });
+        setCloStatus({ courseId, courseName, status: response.data.message, missingCLOs: cloDetails });
       } else {
-        setCloStatus({ courseId, status: response.data.message, missingCLOs: [] });
+        setCloStatus({ courseId, courseName, status: response.data.message, missingCLOs: [] });
       }
     } catch (err) {
       console.error('Error checking CLOs:', err);
@@ -52,45 +66,42 @@ const ViewStatus = ({ teacherId }) => {
     }
   };
 
+  const columns = [
+    { name: 'Course Name', selector: row => row.course_name, sortable: true },
+    { name: 'Program Name', selector: row => row.program_name, sortable: true },
+    { name: 'Session', selector: row => row.session, sortable: true },
+    { name: 'Semester', selector: row => row.semester_name, sortable: true },
+    {
+      name: 'Check CLOs',
+      cell: row => (
+        <button
+          className="check-btn"
+          onClick={() => checkCLOs(row.id)}
+          disabled={loading && selectedCourseId === row.id}
+        >
+          {loading && selectedCourseId === row.id ? (
+            <span className="loading-spinner"></span>
+          ) : 'Check CLOs'}
+        </button>
+      )
+    }
+  ];
+
   return (
     <div className="view-status-container">
       <h2 className="header-title">Course CLO Status</h2>
-      <table className="courses-table">
-        <thead>
-          <tr>
-            <th>Course Name</th>
-            <th>Program Name</th>
-            <th>Session</th>
-            <th>Semester</th>
-            <th>Check CLOs</th>
-          </tr>
-        </thead>
-        <tbody>
-          {courses.map((course) => (
-            <tr key={course.id}>
-              <td>{course.course_name}</td>
-              <td>{course.program_name}</td>
-              <td>{course.session}</td>
-              <td>{course.semester_name}</td>
-              <td>
-                <button
-                  className="check-btn"
-                  onClick={() => checkCLOs(course.id)}
-                  disabled={loading && selectedCourseId === course.id}
-                >
-                  {loading && selectedCourseId === course.id ? (
-                    <span className="loading-spinner"></span>
-                  ) : 'Check CLOs'}
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <DataTable
+        columns={columns}
+        data={courses}
+        pagination
+        highlightOnHover
+        responsive
+        pointerOnHover
+      />
 
       {cloStatus && (
         <div className="clo-status-card">
-          <h3 className="course-status-header">Status for Course ID: {cloStatus.courseId}</h3>
+          <h3 className="course-status-header">Status for Course: {cloStatus.courseName}</h3> {/* Display course name */}
           <p className={`status-message ${cloStatus.missingCLOs.length === 0 ? 'success' : 'error'}`}>
             {cloStatus.status}
           </p>
@@ -106,7 +117,7 @@ const ViewStatus = ({ teacherId }) => {
                 ))}
               </ul>
             </div>
-          )}
+          )} 
         </div>
       )}
     </div>

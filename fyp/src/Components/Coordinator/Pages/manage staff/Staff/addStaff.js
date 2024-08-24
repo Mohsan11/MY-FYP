@@ -66,7 +66,7 @@ const AddStaff = () => {
       </div>
       <div>
         <label>Email:</label>
-        <input className='lp' type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input className='lp'  style={{width: 'calc(100% - 20px)'}} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
       </div>
       <div>
         <label>Password:</label>

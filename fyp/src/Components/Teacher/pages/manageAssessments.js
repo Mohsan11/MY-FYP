@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import './manageAssessments.css'
 const ManageAssessments = ({ teacherId, course }) => {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -226,26 +226,29 @@ useEffect(() => {
 
       <div className="course-list">
         <h3>Courses</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Course Name</th>
-              <th>Program Name</th>
-              <th>Session</th>
-              <th>Semester</th>
-            </tr>
-          </thead>
-          <tbody>
-            {courses.map((course) => (
-              <tr key={course.id} onClick={() => handleCourseClick(course)} className="pointer">
-                <td>{course.course_name}</td>
-                <td>{course.program_name}</td>
-                <td>{course.session}</td>
-                <td>{course.semester_name}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="table-container">
+  <table className="assessment-table">
+    <thead className="table-header">
+      <tr>
+        <th className="header-cell">Course Name</th>
+        <th className="header-cell">Program Name</th>
+        <th className="header-cell">Session</th>
+        <th className="header-cell">Semester</th>
+      </tr>
+    </thead>
+    <tbody className="table-body">
+      {courses.map((course) => (
+        <tr key={course.id} onClick={() => handleCourseClick(course)} className="table-row pointer">
+          <td className="table-cell">{course.course_name}</td>
+          <td className="table-cell">{course.program_name}</td>
+          <td className="table-cell">{course.session}</td>
+          <td className="table-cell">{course.semester_name}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
       </div>
 
       {selectedCourse && (

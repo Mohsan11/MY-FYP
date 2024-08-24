@@ -190,7 +190,7 @@ const AddAssessment = ({ course, teacherId }) => {
         <select value={selectedCourseId} onChange={(e) => setSelectedCourseId(e.target.value)} disabled={!!course}>
           <option value="" disabled>Select Course</option>
           {courses.map(course => (
-            <option key={course.id} value={course.id}>{course.course_name}</option>
+            <option key={course.id} value={course.id}>{course.course_name.split(' ').slice(0, 3).join(' ')}</option>
           ))}
         </select>
       </div>
@@ -239,7 +239,7 @@ const AddAssessment = ({ course, teacherId }) => {
                 >
                 <option value="" disabled>Select CLO</option>
                 {clos.map(clo => (
-                  <option key={clo.id} value={clo.id}>{clo.clo_name} - {clo.description}</option>
+                  <option key={clo.id} value={clo.id}>{clo.clo_name} - {clo.description.split(' ').slice(0, 3).join(' ')}</option>
                 ))}
                 </select>
               </div> <div className='rp button-group'>

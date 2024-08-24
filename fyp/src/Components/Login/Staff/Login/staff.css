@@ -3,80 +3,114 @@ body {
   background-color: #f9f9f9;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 .container2 {
+  width: 100%;
   text-align: center;
-  margin-top: 20px;
+  padding: 20px 0;
 }
 
 .login-form-container {
-  max-width: 500px;
-  margin: 50px auto;
-  padding: 20px;
+  max-width: 400px;
+  width: 90%;
+  margin: 30px auto;
+  padding: 25px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 10px; /* Increased border-radius */
   background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Soft shadow for a subtle effect */
+  box-sizing: border-box;
 }
 
 .login-form-container h2 {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   text-align: center;
+  font-size: 1.5em; /* Increased font size */
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 10px; /* Increased margin for better spacing */
   font-weight: bold;
+  font-size: 1em; /* Slightly larger label text */
 }
 
 input[type='email'],
 input[type='password'] {
-  width: calc(100% - 22px);
-  padding: 10px;
+  width: calc(100% - 20px);
+  padding: 12px; /* Increased padding for a better touch experience */
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 8px; /* Increased border-radius */
   box-sizing: border-box;
+  font-size: 1em; /* Slightly larger input text */
 }
 
 input[type='email']:focus,
 input[type='password']:focus {
   border-color: #007bff;
   outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Subtle blue shadow on focus */
 }
 
 .button2 {
-  width: 30%;
-  padding: 10px;
+  width: 100%;
+  padding: 12px;
   background-color: #007bff;
   color: #fff;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s; 
+  font-size: 1em;
+  transition: background-color 0.3s, transform 0.2s; /* Added transform for hover effect */
 }
 
 .button2:hover {
   background-color: #0056b3;
+  transform: translateY(-2px); /* Slight lift effect on hover */
 }
 
 .error {
   color: red;
   margin-top: 10px;
   text-align: center;
+  font-size: 0.9em;
 }
 
 img {
   max-width: 100%;
   height: auto;
 }
-.center{
+
+.center {
   display: flex;
-  width: 100%;
-  margin-left: 52%;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.center button {
+  width: 48%;
+  margin: 0 5px;
+}
+
+@media (max-width: 600px) {
+  .login-form-container {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .button2 {
+    width: 100%;
+    padding: 10px;
+  }
+
+  input[type='email'],
+  input[type='password'] {
+    width: calc(100% - 20px);
+  }
 }

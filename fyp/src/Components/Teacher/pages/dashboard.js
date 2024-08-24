@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import DataTable from 'react-data-table-component';
 
 const Dashboard = ({ teacherId, onCourseClick }) => {
   const [courses, setCourses] = useState([]);
@@ -17,29 +18,43 @@ const Dashboard = ({ teacherId, onCourseClick }) => {
     fetchCourses();
   }, [teacherId]);
 
+  // Define the columns for the DataTable
+  const columns = [
+    {
+      name: 'Course Name',
+      selector: (row) => row.course_name,
+      sortable: true,
+      cell: (row) => <span className="pointer" onClick={() => onCourseClick(row)}>{row.course_name}</span>,
+    },
+    {
+      name: 'Program Name',
+      selector: (row) => row.program_name,
+      sortable: true,
+    },
+    {
+      name: 'Session',
+      selector: (row) => row.session,
+      sortable: true,
+    },
+    {
+      name: 'Semester',
+      selector: (row) => row.semester_name,
+      sortable: true,
+    }
+  ];
+
   return (
     <div>
       <h2>Dashboard</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Course Name</th>
-            <th>Program Name</th>
-            <th>Session</th>
-            <th>Semester</th>
-          </tr>
-        </thead>
-        <tbody>
-          {courses.map((course) => (
-            <tr key={course.id} onClick={() => onCourseClick(course)}>
-              <td className='pointer'>{course.course_name}</td>
-              <td>{course.program_name}</td>
-              <td>{course.session}</td>
-              <td>{course.semester_name}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <DataTable
+        columns={columns}
+        data={courses}
+        pagination
+        highlightOnHover
+        pointerOnHover
+        responsive
+        striped
+      />
     </div>
   );
 };

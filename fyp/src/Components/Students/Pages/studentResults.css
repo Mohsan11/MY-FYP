@@ -1,0 +1,55 @@
+/* General container styles */
+.results-container {
+    padding: 20px;
+  }
+  
+  /* Style for each semester results section */
+  .semester-results {
+    margin-bottom: 40px;
+  }
+  
+  .semester-results h3 {
+    margin-bottom: 10px;
+  }
+  
+  /* Responsive table container */
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  .results-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .results-table th, .results-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+  
+  .results-table th {
+    background-color: #f4f4f4;
+  }
+  
+  .results-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .results-table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Table responsive adjustments */
+  @media (max-width: 768px) {
+    .results-table th, .results-table td {
+      padding: 8px 10px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .results-table {
+      font-size: 14px;
+    }
+  }
+  

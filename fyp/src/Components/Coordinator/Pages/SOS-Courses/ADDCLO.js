@@ -197,7 +197,7 @@ const AddCLO = () => {
         <select value={courseId} onChange={(e) => setCourseId(e.target.value)}>
           <option value="" disabled>Select Course</option>
           {courses.map(course => (
-            <option key={course.id} value={course.id}>{course.name}</option>
+            <option key={course.id} value={course.id}>{course.name.split(' ').slice(0, 3).join(' ')}</option>
           ))}
         </select>
       </div>

@@ -1,107 +1,139 @@
+/* ViewStatus.css */
 .view-status-container {
-    padding: 20px;
-    max-width: 1000px;
-    margin: 0 auto;
+  padding: 20px;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.header-title {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.check-btn {
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 14px;
+}
+
+.check-btn:hover {
+  background-color: #0056b3;
+}
+
+.loading-spinner {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #007bff;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.clo-status-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.course-status-header {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.status-message {
+  font-size: 18px;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.status-message.success {
+  color: #28a745;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+}
+
+.status-message.error {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+.missing-clos {
+  text-align: left;
+  margin-top: 20px;
+}
+
+.missing-clos ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.missing-clos li {
+  background-color: #f8f9fa;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  .view-status-container {
+    padding: 10px;
   }
-  
+
   .header-title {
-    text-align: center;
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-  
-  .courses-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 30px;
-  }
-  
-  .courses-table th, .courses-table td {
-    padding: 10px 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .courses-table th {
-    background-color: #f2f2f2;
-  }
-  
-  .check-btn {
-    padding: 8px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .check-btn:hover {
-    background-color: #0056b3;
-  }
-  
-  .loading-spinner {
-    border: 2px solid #f3f3f3;
-    border-top: 2px solid #007bff;
-    border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    animation: spin 0.8s linear infinite;
-    display: inline-block;
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  .clo-status-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-top: 20px;
-    text-align: center;
-  }
-  
-  .course-status-header {
     font-size: 20px;
-    margin-bottom: 10px;
   }
-  
+
+  .check-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
   .status-message {
+    font-size: 16px;
+  }
+
+  .course-status-header {
     font-size: 18px;
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 5px;
   }
-  
-  .status-message.success {
-    color: #28a745;
-    background-color: #d4edda;
-    border: 1px solid #c3e6cb;
-  }
-  
-  .status-message.error {
-    color: #dc3545;
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
-  }
-  
-  .missing-clos {
-    text-align: left;
-    margin-top: 20px;
-  }
-  
-  .missing-clos ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .missing-clos li {
-    background-color: #f8f9fa;
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 5px;
-  }
-  
+}
+
+.success-msg {
+  color: rgb(2, 80, 2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #76c789;
+  padding: 10px;
+  border: 1px solid green;
+  border-radius: 20px;
+}
+
+.error-msg {
+  color: red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffb3b3;
+  padding: 10px;
+  border: 1px solid red;
+  border-radius: 20px;
+}
