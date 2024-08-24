@@ -32,7 +32,6 @@ const ManageAssessments = ({ teacherId, course }) => {
   }, [teacherId]);
 
   // Fetch CLO status for the selected course
- // Fetch CLO status for the selected course
 useEffect(() => {
   if (selectedCourse) {
     const fetchCloStatus = async () => {
@@ -99,9 +98,9 @@ useEffect(() => {
   // Handle course selection and fetch related assessments
   const handleCourseClick = async (course) => {
     setSelectedCourse(course);
-    setSelectedAssessment(null);
+    setSelectedAssessment(null); // Reset selected assessment
     setQuestions([]);
-
+  
     setLoading(true);
     try {
       const response = await axios.get(`http://localhost:4000/api/assessments/course/${course.id}`);
@@ -113,32 +112,47 @@ useEffect(() => {
       setLoading(false);
     }
   };
+  
 
   // Handle assessment selection and fetch related questions
-  const handleAssessmentSelect = async (assessmentId) => {
+  const handleAssessmentSelect = async (event) => {
+    const assessmentId = parseInt(event.target.value, 10); // Convert to number
+    console.log("Selected Assessment ID:", assessmentId); // Debugging
+    if (isNaN(assessmentId)) {
+      console.error("Assessment ID is invalid.");
+      return;
+    }
+  
     const selected = assessments.find((a) => a.id === assessmentId);
-    setSelectedAssessment(selected);
-
-    setLoading(true);
-    try {
-      const response = await axios.get(`http://localhost:4000/api/questions/assessment/${assessmentId}`);
-      const questionsWithAssessmentNames = await Promise.all(
-        response.data.map(async (question) => {
-          const assessmentResponse = await axios.get(`http://localhost:4000/api/assessments/${question.assessment_id}`);
-          return {
-            ...question,
-            assessment_name: assessmentResponse.data.assessment_name,
-          };
-        })
-      );
-      setQuestions(questionsWithAssessmentNames);
-      setError(null);
-    } catch (error) {
-      setError("Error fetching questions.");
-    } finally {
-      setLoading(false);
+    if (selected) {
+      setSelectedAssessment(selected);
+      console.log("Selected Assessment:", selected); // Debugging
+  
+      setLoading(true);
+      try {
+        const response = await axios.get(`http://localhost:4000/api/questions/assessment/${assessmentId}`);
+        const questionsWithAssessmentNames = await Promise.all(
+          response.data.map(async (question) => {
+            const assessmentResponse = await axios.get(`http://localhost:4000/api/assessments/${question.assessment_id}`);
+            return {
+              ...question,
+              assessment_name: assessmentResponse.data.assessment_name,
+            };
+          })
+        );
+        setQuestions(questionsWithAssessmentNames);
+        setError(null);
+      } catch (error) {
+        setError("Error fetching questions.");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setError("Invalid assessment ID.");
     }
   };
+  
+
 
   // Handle assessment deletion
   const handleDeleteQuestion = async (questionId) => {
@@ -196,6 +210,33 @@ useEffect(() => {
     }
   };
   
+// Handle assessment deletion
+const handleDeleteAssessment = async () => {
+  if (selectedAssessment) {
+    setLoading(true);
+    try {
+      await axios.delete(`http://localhost:4000/api/assessments/deleteassessment/${selectedAssessment.id}`);
+      setAssessments(assessments.filter((assessment) => assessment.id !== selectedAssessment.id));
+      setSelectedAssessment(null); // Reset selected assessment
+      setQuestions([]); // Clear questions
+      setMessage('Assessment deleted successfully');
+      setMessageType('success');
+      setError(null);
+    } catch (error) {
+      setError("Error deleting assessment.");
+      setMessage('Error deleting assessment');
+      setMessageType('error');
+    } finally {
+      setTimeout(() => {
+        setMessage('');
+        setMessageType('');
+      }, 3000);
+      setLoading(false);
+    }
+  } else {
+    setError("No assessment selected.");
+  }
+};
 
   
 
@@ -255,16 +296,17 @@ useEffect(() => {
         <div className="assessment-dropdown">
           <h3>Assessments for: {selectedCourse.course_name}</h3>
           <select
-            onChange={(e) => handleAssessmentSelect(e.target.value)}
-            value={selectedAssessment?.id || ""}
-          >
-            <option value="">Select an Assessment</option>
-            {assessments.map((assessment) => (
-              <option key={assessment.id} value={assessment.id}>
-                {assessment.assessment_name} - {assessment.assessment_type}
-              </option>
-            ))}
-          </select>
+  onChange={handleAssessmentSelect}
+  value={selectedAssessment ? selectedAssessment.id : ""}
+>
+  <option value="">Select an Assessment</option>
+  {assessments.map((assessment) => (
+    <option key={assessment.id} value={assessment.id}>
+      {assessment.assessment_name} - {assessment.assessment_type}
+    </option>
+  ))}
+</select>
+
         </div>
       )}
 
@@ -319,10 +361,10 @@ useEffect(() => {
             </div>
           )}
           </ol>
-          {/* <div className="button-group rp">
-            <button className="button save-button" onClick={handleSaveChanges}>Save Changes</button>
-            <button className="button delete-button" onClick={handleDeleteAssessment}>Delete Assessment</button>
-          </div> */}
+          <div className="button-group rp">
+           <button className="button cancel-button" onClick={handleDeleteAssessment}>Delete Assessment</button>     
+          </div>
+          
         </div>
       )}
     </div>

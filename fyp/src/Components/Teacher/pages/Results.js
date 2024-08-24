@@ -171,7 +171,6 @@ const Results = ({ teacherId }) => {
                 setShowMoreDetails(true);
                 setLoading(false);
                 setError('');
-                setSuccessMessage('Marks saved successfully!'); 
               })
               .catch(error => {
                 console.error('Error fetching question marks:', error);
