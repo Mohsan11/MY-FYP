@@ -45,7 +45,7 @@ const Dashboard = ({ teacherId, onCourseClick }) => {
 
   return (
     <div>
-      <h2>Dashboard</h2>
+      <h2>Teacher-Dashboard</h2>
       <DataTable
         columns={columns}
         data={courses}

@@ -114,18 +114,20 @@ const Results = ({ teacherId }) => {
         axios.get(`http://localhost:4000/api/questions/assessment/${assessmentId}`)
           .then(questionsResponse => {
             const questions = questionsResponse.data;
-
             const fetchMarksPromises = questions.map(question =>
               axios.get(`http://localhost:4000/api/marks/question/${question.id}`)
-                .then(marksResponse => ({
-                  id: question.id,
-                  question_text: question.question_text,
-                  marks: question.marks,
-                  obtained_marks: marksResponse.data.reduce((acc, mark) => acc + mark.obtained_marks, 0),
-                  total_marks: question.marks
-                }))
+                .then(marksResponse => {
+                  const studentMarks = marksResponse.data.find(mark => mark.student_id === selectedStudent);
+                  return {
+                    id: question.id,
+                    question_text: question.question_text,
+                    marks: question.marks,
+                    obtained_marks: studentMarks ? studentMarks.obtained_marks : 0, // If no mark found, return 0
+                    total_marks: question.marks
+                  };
+                })
             );
-
+            
             Promise.all(fetchMarksPromises)
               .then(updatedQuestions => {
                 setAssessmentDetails({
