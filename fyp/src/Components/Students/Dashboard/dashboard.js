@@ -62,7 +62,7 @@ const Dashboard = ({ studentId }) => {
           programName: programData.name,
           session: `${sessionData.start_year} - ${sessionData.end_year}`,
           numberOfCourses: coursesData.length,
-          numberOfSemesters: semestersData.length, // Ensure this reflects the length of fetched data
+          numberOfSemesters: semestersData.length, 
         });
 
       } catch (error) {
@@ -77,7 +77,7 @@ const Dashboard = ({ studentId }) => {
     if (alerts.length > 0) {
       const timer = setTimeout(() => {
         setAlerts([]);
-      }, 9000); // Timeout duration for notifications
+      }, 5000); // Timeout duration for notifications
 
       return () => clearTimeout(timer);
     }

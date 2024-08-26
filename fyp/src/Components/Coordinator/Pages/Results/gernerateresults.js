@@ -12,6 +12,7 @@ const GenerateResults = () => {
   const [selectedSemester, setSelectedSemester] = useState('');
   const [selectedStudent, setSelectedStudent] = useState('');
   const [results, setResults] = useState([]);
+  const [cloAchievements, setCloAchievements] = useState({});
   const [responseMessage, setResponseMessage] = useState('');
   const [responseType, setResponseType] = useState('');
 
@@ -65,6 +66,29 @@ const GenerateResults = () => {
             const studentName = students.find(student => student.id === parseInt(selectedStudent))?.student_name;
             setResponseMessage(`Ready to generate results for ${studentName}`);
             setResponseType('success');
+
+            // Fetch CLO achievements
+            axios.get(`http://localhost:4000/api/track/clo-achievements/${selectedStudent}/${selectedSemester}`)
+              .then(response => {
+                // Organize CLO achievements by course_id
+                const cloByCourse = response.data.reduce((acc, clo) => {
+                  if (!acc[clo.course_id]) {
+                    acc[clo.course_id] = { passed: [], failed: [] };
+                  }
+                  if (clo.status === 'Passed') {
+                    acc[clo.course_id].passed.push(clo.clo_name);
+                  } else if (clo.status === 'Failed') {
+                    acc[clo.course_id].failed.push(clo.clo_name);
+                  }
+                  return acc;
+                }, {});
+                setCloAchievements(cloByCourse);
+              })
+              .catch(error => {
+                console.error('Error fetching CLO achievements:', error);
+                setResponseMessage('Error fetching CLO achievements.');
+                setResponseType('error');
+              });
           } else {
             setResponseMessage('Some assessments are missing or not completed.');
             setResponseType('error');
@@ -83,12 +107,19 @@ const GenerateResults = () => {
 
   const handleSaveResults = () => {
     if (results.length) {
+      // Prepare the results with CLO information
+      const resultsWithClo = results.map(result => ({
+        ...result,
+        clo_achieved: cloAchievements[result.course_id]?.passed.join(', ') || 'N/A',
+        clo_not_achieved: cloAchievements[result.course_id]?.failed.join(', ') || 'N/A'
+      }));
+  
       axios.post('http://localhost:4000/api/add_final_results/results/save', {
         student_id: selectedStudent,
         program_id: selectedProgram,
         session_id: selectedSession,
         semester_id: selectedSemester,
-        results
+        results: resultsWithClo
       })
       .then(() => {
         setResponseMessage('Results successfully saved!');
@@ -104,7 +135,7 @@ const GenerateResults = () => {
       setResponseType('error');
     }
   };
-
+  
   return (
     <div className='lp'>
       <h2>Generate Results</h2>
@@ -184,11 +215,15 @@ const GenerateResults = () => {
                   ))}
                 </tbody>
               </table>
-              <p>Total Marks: {result.total_marks}</p>
-              <p>Obtained Marks: {result.obtained_marks}</p>
-              <p>Grade: {result.grade}</p>
-              <p>GPA: {result.gpa}</p>
-              <p>Credit Hours: {result.credit_hours}</p>
+              <p><b>Total Marks:</b> {result.total_marks}</p>
+              <p><b>Obtained Marks:</b> {result.obtained_marks}</p>
+              <p><b>Grade: </b> {result.grade}</p>
+              <p><b>GPA: </b> {result.gpa}</p>
+              <p><b>Credit Hours: </b> {result.credit_hours}</p>
+
+              {/* New CLO achievement sections */}
+              <p><b>Achieved CLO Names:</b> {cloAchievements[result.course_id]?.passed.join(', ') || 'None'}</p>
+              <p><b>Not Achieved CLO Names:</b> {cloAchievements[result.course_id]?.failed.join(', ') || 'None'}</p>
             </div>
           ))}
         </div>

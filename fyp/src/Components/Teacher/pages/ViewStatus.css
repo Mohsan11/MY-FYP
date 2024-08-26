@@ -137,3 +137,20 @@
   border: 1px solid red;
   border-radius: 20px;
 }
+.notification-btn{
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  color: black;
+}
+.back_button{
+  font-weight:600;
+  background-color: #dddddd;
+}
+.back_button:hover{
+  background-color: #bdbdbd;
+}

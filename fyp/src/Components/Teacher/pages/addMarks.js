@@ -104,6 +104,7 @@ const AddMarks = ({ teacherId }) => {
           return response.data;
         }).catch(error => {
           console.error('Error saving mark:', error);
+
           return Promise.reject(error);
         });
       });
@@ -149,7 +150,7 @@ const AddMarks = ({ teacherId }) => {
         setMessageType('success');
       })
       .catch(error => {
-        setMessage('Error saving marks and results');
+        setMessage('Mark already exists for this student and question');
         setMessageType('error');
         console.error('Error saving marks and results:', error);
       })
@@ -198,6 +199,8 @@ const AddMarks = ({ teacherId }) => {
       cell: (row) => (
         <input
           type="number"
+          min={0}
+          max={row.marks}
           value={marks[row.question_id]?.[row.student_id] || ''}
           onChange={(e) => handleMarkChange(row.question_id, row.student_id, e)}
         />

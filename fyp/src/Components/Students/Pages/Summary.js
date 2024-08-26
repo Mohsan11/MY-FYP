@@ -13,6 +13,7 @@ const Summary = ({ studentId }) => {
         const enrolledCoursesResponse = await fetch(`http://localhost:4000/api/studentenrollments/student/${studentId}`);
         const enrolledCourses = await enrolledCoursesResponse.json();
 
+        // Fetch all semester details for the courses
         const courseDetails = await Promise.all(enrolledCourses.map(async (course) => {
           // Fetch course details
           const courseResponse = await fetch(`http://localhost:4000/api/courses/${course.course_id}`);
@@ -40,13 +41,20 @@ const Summary = ({ studentId }) => {
             courseName: courseData.name,
             teacherNames: teachers.map(teacher => teacher.username).join(', '),
             courseCLOs: clos.map(clo => clo.clo_name).join(', '),
-            semester: semesterData.name,
+            semesterName: semesterData.name,
+            semesterNumber: semesterData.number, // Ensure semesterData includes a numeric semester number
             theoryCreditHours: courseData.theory_credit_hours,
             labCreditHours: courseData.lab_credit_hours
           };
         }));
 
-        setCourseData(courseDetails);
+        // Find the maximum semester number
+        const maxSemesterNumber = Math.max(...courseDetails.map(course => course.semesterNumber));
+
+        // Filter courses that have the maximum semester number
+        const filteredCourses = courseDetails.filter(course => course.semesterNumber === maxSemesterNumber);
+
+        setCourseData(filteredCourses);
       } catch (error) {
         console.error('Error fetching course data:', error);
       }
@@ -84,7 +92,7 @@ const Summary = ({ studentId }) => {
     },
     { name: 'Teacher Names', selector: row => row.teacherNames, sortable: true },
     { name: 'Course CLOs', selector: row => row.courseCLOs, sortable: true },
-    { name: 'Semester', selector: row => row.semester, sortable: true },
+    { name: 'Semester', selector: row => row.semesterName, sortable: true },
     { name: 'Theory Credit Hours', selector: row => row.theoryCreditHours, sortable: true },
     { name: 'Lab Credit Hours', selector: row => row.labCreditHours, sortable: true }
   ];
